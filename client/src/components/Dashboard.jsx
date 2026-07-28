@@ -3,8 +3,13 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import CommandPalette from './CommandPalette';
 import PlatformFilterBar from './PlatformFilterBar';
+import ThemeCustomizer from './ThemeCustomizer';
 import KpiCards from './KpiCards';
 import ExecutiveOverview from './ExecutiveOverview';
+import SavingsSimulator from './SavingsSimulator';
+import TopologyMap from './TopologyMap';
+import AnomalyRadar from './AnomalyRadar';
+import InvoiceGenerator from './InvoiceGenerator';
 import ResourceInventory from './ResourceInventory';
 import AiCostAdvisor from './AiCostAdvisor';
 import MultiCloudBreakdown from './MultiCloudBreakdown';
@@ -203,7 +208,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
           {loading ? (
             <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
               <div className="spin-anim" style={{ fontSize: '2rem', marginBottom: '16px' }}>☁️</div>
-              <p>Connecting to AWS Cost Explorer API...</p>
+              <p>Initializing Enterprise FinOps & CloudOps Platform...</p>
             </div>
           ) : (
             <div className="animate-fade-in">
@@ -242,6 +247,9 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
                   </button>
                 </div>
               )}
+
+              {/* Theme Customizer Accent Bar */}
+              <ThemeCustomizer />
               
               {/* Platform Selection Filter Bar */}
               <PlatformFilterBar
@@ -262,6 +270,26 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
                 summary={displayData?.summary}
                 budgets={budgets}
               />
+
+              {/* Feature 1: Interactive Savings Simulator */}
+              {(activeModule === 'overview' || activeModule === 'advisor') && (
+                <SavingsSimulator monthlySpend={displayData?.summary?.totalMonthlyCost || 3120} />
+              )}
+
+              {/* Feature 2: Infrastructure Topology Map */}
+              {(activeModule === 'overview' || activeModule === 'inventory') && (
+                <TopologyMap />
+              )}
+
+              {/* Feature 4: Live Anomaly Radar & Alert Test */}
+              {(activeModule === 'overview' || activeModule === 'anomalies') && (
+                <AnomalyRadar token={token} />
+              )}
+
+              {/* Feature 3: Invoice & Billing Generator */}
+              {(activeModule === 'overview' || activeModule === 'reports') && (
+                <InvoiceGenerator summary={displayData?.summary} />
+              )}
 
               {/* Module 2 & 3: AI Cost Advisor */}
               {(activeModule === 'overview' || activeModule === 'advisor' || activeModule === 'anomalies') && (
