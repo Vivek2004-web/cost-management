@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Palette, Check } from 'lucide-react';
 
 export default function ThemeCustomizer() {
-  const [selectedTheme, setSelectedTheme] = useState('amber');
+  const [selectedTheme, setSelectedTheme] = useState(() => localStorage.getItem('finops_theme') || 'amber');
 
   const themes = [
     { id: 'amber', name: 'Neon Amber', color: '#FF9900', secondary: '#E67E00' },
@@ -11,16 +11,23 @@ export default function ThemeCustomizer() {
     { id: 'violet', name: 'Electric Violet', color: '#8B5CF6', secondary: '#7C3AED' }
   ];
 
+  useEffect(() => {
+    document.documentElement.className = `theme-${selectedTheme}`;
+  }, [selectedTheme]);
+
   const handleApplyTheme = (theme) => {
     setSelectedTheme(theme.id);
+    localStorage.setItem('finops_theme', theme.id);
+    document.documentElement.className = `theme-${theme.id}`;
     document.documentElement.style.setProperty('--accent-primary', theme.color);
-    document.documentElement.style.setProperty('--primary-glow', `${theme.color}40`);
+    document.documentElement.style.setProperty('--accent-secondary', theme.secondary);
+    document.documentElement.style.setProperty('--accent-glow', `${theme.color}40`);
   };
 
   return (
     <div className="glass-panel" style={{ padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <Palette size={18} color="#FF9900" />
+        <Palette size={18} color="var(--accent-primary)" />
         <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)' }}>
           Dashboard Accent Customizer:
         </span>
@@ -36,7 +43,7 @@ export default function ThemeCustomizer() {
               onClick={() => handleApplyTheme(t)}
               style={{
                 background: isSelected ? `${t.color}25` : 'rgba(255,255,255,0.03)',
-                border: isSelected ? `1px solid ${t.color}` : '1px solid var(--border-color)',
+                border: isSelected ? `2px solid ${t.color}` : '1px solid var(--border-color)',
                 borderRadius: '20px',
                 padding: '6px 14px',
                 color: isSelected ? t.color : 'var(--text-muted)',
@@ -46,7 +53,8 @@ export default function ThemeCustomizer() {
                 alignItems: 'center',
                 gap: '8px',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                boxShadow: isSelected ? `0 0 12px ${t.color}40` : 'none'
               }}
             >
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: t.color }} />
