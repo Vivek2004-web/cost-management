@@ -135,22 +135,23 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
     if (!costData) return null;
     if (selectedPlatform === 'ALL') return costData;
 
-    const filteredProviders = (costData.cloudProviders || []).filter(p => p.short.toUpperCase() === selectedPlatform);
-    const filteredServices = (costData.serviceDistribution || []).filter(s => s.provider && s.provider.toUpperCase().includes(selectedPlatform));
-    const filteredAiAdvisor = (costData.aiCostAdvisor || []).filter(r => r.provider && r.provider.toUpperCase().includes(selectedPlatform));
-    const filteredAiRecs = (costData.aiRecommendations || []).filter(r => r.provider && r.provider.toUpperCase().includes(selectedPlatform));
+    const filteredProviders = (costData.cloudProviders || []).filter(p => p.short.toUpperCase() === selectedPlatform || p.name.toUpperCase().includes(selectedPlatform));
+    const filteredServices = (costData.serviceDistribution || []).filter(s => !s.provider || s.provider.toUpperCase().includes(selectedPlatform) || selectedPlatform === 'AWS');
+    const filteredAiAdvisor = (costData.aiCostAdvisor || []).filter(r => !r.provider || r.provider.toUpperCase().includes(selectedPlatform));
+    const filteredAiRecs = (costData.aiRecommendations || []).filter(r => !r.provider || r.provider.toUpperCase().includes(selectedPlatform));
 
-    const platformTotal = filteredProviders.reduce((acc, p) => acc + p.cost, 0);
+    // Calculate actual total cost for selected platform directly from real backend data
+    const platformTotal = filteredProviders.length > 0 ? filteredProviders.reduce((acc, p) => acc + p.cost, 0) : costData.summary?.totalMonthlyCost;
 
     return {
       ...costData,
       summary: {
         ...costData.summary,
-        totalMonthlyCost: platformTotal || (selectedPlatform === 'AWS' ? 1650 : (selectedPlatform === 'AZURE' ? 940 : 530)),
-        todaysCost: parseFloat(((platformTotal || 1500) / 28).toFixed(2)),
-        highestCostService: filteredServices.length > 0 ? filteredServices[0].name : `${selectedPlatform} Compute`
+        totalMonthlyCost: parseFloat(platformTotal.toFixed(2)),
+        todaysCost: parseFloat(((platformTotal) / 28).toFixed(2)),
+        highestCostService: filteredServices.length > 0 ? filteredServices[0].name : `${selectedPlatform} Services`
       },
-      cloudProviders: filteredProviders,
+      cloudProviders: filteredProviders.length > 0 ? filteredProviders : costData.cloudProviders,
       serviceDistribution: filteredServices.length > 0 ? filteredServices : costData.serviceDistribution,
       aiCostAdvisor: filteredAiAdvisor,
       aiRecommendations: filteredAiRecs
@@ -208,7 +209,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
           {loading ? (
             <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
               <div className="spin-anim" style={{ fontSize: '2rem', marginBottom: '16px' }}>☁️</div>
-              <p>Initializing Enterprise FinOps & CloudOps Platform...</p>
+              <p>Fetching Actual AWS Cost Explorer Billing Data...</p>
             </div>
           ) : (
             <div className="animate-fade-in">
@@ -273,7 +274,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
 
               {/* Feature 1: Interactive Savings Simulator */}
               {(activeModule === 'overview' || activeModule === 'advisor') && (
-                <SavingsSimulator monthlySpend={displayData?.summary?.totalMonthlyCost || 3120} />
+                <SavingsSimulator monthlySpend={displayData?.summary?.totalMonthlyCost || 0} />
               )}
 
               {/* Feature 2: Infrastructure Topology Map */}
