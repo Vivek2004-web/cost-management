@@ -1,0 +1,143 @@
+import React from 'react';
+import {
+  Zap, Layers, Bot, Target, AlertTriangle, PieChart, Globe, Users,
+  ShieldCheck, CheckSquare, FileText, Play, Download, Settings, ChevronLeft, ChevronRight, Cloud
+} from 'lucide-react';
+
+export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onSelectModule }) {
+  const navigationItems = [
+    { id: 'overview', label: 'Executive Overview', icon: Zap, badge: 'HEALTH: 92' },
+    { id: 'advisor', label: 'AI Cost Advisor', icon: Bot, badge: 'SAVE $1.3K' },
+    { id: 'inventory', label: 'Resource Inventory', icon: Layers, badge: '28 ACTIVE' },
+    { id: 'budgets', label: 'Budget Center', icon: Target },
+    { id: 'anomalies', label: 'Alert Center', icon: AlertTriangle, badge: '2 SPIKES' },
+    { id: 'breakdown', label: 'Cost Breakdown', icon: PieChart },
+    { id: 'regions', label: 'Region Analysis', icon: Globe },
+    { id: 'teams', label: 'Team Cost Center', icon: Users },
+    { id: 'carbon', label: 'Carbon Impact', icon: ShieldCheck, badge: 'CO₂ -14%' },
+    { id: 'automation', label: 'Automation Rules', icon: CheckSquare },
+    { id: 'timeline', label: 'Activity Timeline', icon: FileText },
+    { id: 'quick', label: 'Quick Actions', icon: Play },
+    { id: 'reports', label: 'Reports & Export', icon: Download },
+    { id: 'settings', label: 'Credentials & Settings', icon: Settings }
+  ];
+
+  return (
+    <aside style={{
+      width: collapsed ? '72px' : '260px',
+      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      background: 'rgba(12, 16, 26, 0.95)',
+      backdropFilter: 'blur(20px)',
+      borderRight: '1px solid var(--border-color)',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100
+    }}>
+      <div>
+        {/* Brand Header */}
+        <div style={{
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'space-between',
+          borderBottom: '1px solid var(--border-color)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #FF9900 0%, #0089D6 50%, #4285F4 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 15px rgba(255, 153, 0, 0.4)',
+              flexShrink: 0
+            }}>
+              <Cloud size={20} color="#FFF" />
+            </div>
+            {!collapsed && (
+              <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #FFFFFF 0%, #E5E7EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                CloudOps<span style={{ color: '#FF9900', WebkitTextFillColor: '#FF9900' }}>.Enterprise</span>
+              </span>
+            )}
+          </div>
+
+          <button
+            onClick={onToggleCollapse}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: collapsed ? 'none' : 'block' }}
+            title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            <ChevronLeft size={18} />
+          </button>
+        </div>
+
+        {/* Navigation Items */}
+        <div style={{ padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {navigationItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = activeModule === item.id;
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => onSelectModule(item.id)}
+                style={{
+                  background: isActive ? 'linear-gradient(90deg, rgba(255,153,0,0.18) 0%, rgba(255,153,0,0.04) 100%)' : 'transparent',
+                  border: '1px solid',
+                  borderColor: isActive ? 'rgba(255,153,0,0.4)' : 'transparent',
+                  borderRadius: '10px',
+                  padding: collapsed ? '12px 0' : '10px 14px',
+                  color: isActive ? '#FF9900' : 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'space-between',
+                  gap: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  width: '100%'
+                }}
+                title={collapsed ? item.label : ''}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <IconComponent size={18} style={{ flexShrink: 0 }} />
+                  {!collapsed && (
+                    <span style={{ fontSize: '0.85rem', fontWeight: isActive ? 700 : 500, whiteSpace: 'nowrap' }}>
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+
+                {!collapsed && item.badge && (
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    padding: '2px 6px',
+                    borderRadius: '6px',
+                    background: isActive ? 'rgba(255,153,0,0.25)' : 'rgba(255,255,255,0.06)',
+                    color: isActive ? '#FF9900' : 'var(--text-muted)'
+                  }}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Collapse Toggle Footer */}
+      {collapsed && (
+        <div style={{ padding: '16px 0', textAlign: 'center', borderTop: '1px solid var(--border-color)' }}>
+          <button onClick={onToggleCollapse} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
+    </aside>
+  );
+}

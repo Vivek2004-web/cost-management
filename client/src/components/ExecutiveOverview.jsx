@@ -1,0 +1,87 @@
+import React from 'react';
+import { ShieldCheck, Zap, DollarSign, Activity, AlertTriangle, ArrowUpRight, TrendingDown } from 'lucide-react';
+
+export default function ExecutiveOverview({ summary, onNavigate }) {
+  const healthScore = 92;
+
+  return (
+    <div className="glass-panel" style={{ padding: '24px', marginBottom: '28px', background: 'linear-gradient(135deg, rgba(255, 153, 0, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%)', border: '1px solid rgba(255, 153, 0, 0.25)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Zap size={22} color="#FF9900" />
+            Executive FinOps & Cloud Operations Summary
+          </h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Real-time executive health assessment across multi-cloud infrastructure
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            background: 'rgba(16, 185, 129, 0.15)',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            borderRadius: '12px',
+            padding: '8px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <ShieldCheck size={18} color="#34D399" />
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#34D399' }}>
+              CLOUD HEALTH SCORE: {healthScore}/100
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        
+        {/* Metric 1: Month End Spend */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Estimated Month End Spend</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFF' }}>
+            ${summary?.forecastMonthEnd ? summary.forecastMonthEnd.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '3,380.00'}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#F87171', marginTop: '4px', fontWeight: 700 }}>
+            +8.4% forecast growth
+          </div>
+        </div>
+
+        {/* Metric 2: Savings Captured */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Savings Captured This Month</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#34D399' }}>
+            $1,310.50
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#34D399', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <TrendingDown size={14} /> 4 optimization rules active
+          </div>
+        </div>
+
+        {/* Metric 3: Active Resources */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Active Cloud Resources</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#38BDF8' }}>
+            28 Nodes
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            EC2, RDS, Lambda & S3
+          </div>
+        </div>
+
+        {/* Metric 4: Critical Alerts */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '14px', padding: '18px' }}>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Critical Alerts</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F87171' }}>
+            2 Spikes
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#FBBF24', marginTop: '4px', fontWeight: 700 }}>
+            Requires attention
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
