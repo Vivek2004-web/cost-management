@@ -5,6 +5,10 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Simple in-memory cache to prevent hitting AWS Cost Explorer rate limits (5 req/sec limit)
+const costCache = new Map(); // key: `userId_period`, value: { timestamp, data }
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
+
 // Generate Demo Cost Data fallback
 function generateDemoCostData(daysCount = 30) {
   const cloudProviders = [
@@ -84,21 +88,29 @@ router.get('/overview', authenticateToken, async (req, res) => {
   try {
     const period = req.query.period || '30';
     const daysCount = parseInt(period, 10);
+    const userId = req.user.id;
 
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
 
-    // If demo mode is ON or no keys provided, return demo data
+    // Demo Mode check
     if (!user || user.demo_mode === 1 || (!user.aws_access_key && !user.azure_client_id && !user.gcp_project_id)) {
       const data = generateDemoCostData(daysCount);
       return res.json({ success: true, ...data });
     }
 
-    // --- REAL AWS COST EXPLORER LIVE API CALL ---
+    // Check cache first for rapid requests
+    const cacheKey = `${userId}_${daysCount}`;
+    const cached = costCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+      console.log(`[Cache Hit] Serving cached AWS Cost Explorer data for user ${user.email}`);
+      return res.json({ success: true, ...cached.data });
+    }
+
+    // --- REAL ENTERPRISE AWS COST EXPLORER SDK ENGINE (WITH PAGINATION) ---
     if (user.aws_access_key && user.aws_secret_key) {
       try {
-        console.log(`Connecting to AWS Cost Explorer API for user ${user.email} (Key: ${user.aws_access_key.slice(0, 6)}...)...`);
+        console.log(`Connecting to AWS Cost Explorer API for ${user.email} (Key: ${user.aws_access_key.slice(0, 6)}...)...`);
 
-        // Cost Explorer global endpoint is us-east-1
         const client = new CostExplorerClient({
           region: 'us-east-1',
           credentials: {
@@ -107,7 +119,6 @@ router.get('/overview', authenticateToken, async (req, res) => {
           }
         });
 
-        // Compute Date Range (Start must be at least 1 day prior to End)
         const endDateObj = new Date();
         const startDateObj = new Date();
         startDateObj.setDate(startDateObj.getDate() - (daysCount || 30));
@@ -115,24 +126,35 @@ router.get('/overview', authenticateToken, async (req, res) => {
         const endDate = endDateObj.toISOString().split('T')[0];
         const startDate = startDateObj.toISOString().split('T')[0];
 
-        const command = new GetCostAndUsageCommand({
-          TimePeriod: { Start: startDate, End: endDate },
-          Granularity: 'DAILY',
-          Metrics: ['UnblendedCost'],
-          GroupBy: [{ Type: 'DIMENSION', Key: 'SERVICE' }]
-        });
+        let nextPageToken = null;
+        const allResultsByTime = [];
 
-        const response = await client.send(command);
+        // PAGINATION LOOP: Fetch 100% of all billing pages from AWS for high-usage enterprise accounts
+        do {
+          const command = new GetCostAndUsageCommand({
+            TimePeriod: { Start: startDate, End: endDate },
+            Granularity: 'DAILY',
+            Metrics: ['UnblendedCost'],
+            GroupBy: [{ Type: 'DIMENSION', Key: 'SERVICE' }],
+            NextPageToken: nextPageToken || undefined
+          });
 
-        if (response && response.ResultsByTime && response.ResultsByTime.length > 0) {
-          console.log(`AWS Cost Explorer API Success! Received ${response.ResultsByTime.length} daily entries.`);
+          const response = await client.send(command);
+          if (response && response.ResultsByTime) {
+            allResultsByTime.push(...response.ResultsByTime);
+          }
+          nextPageToken = response.NextPageToken;
+        } while (nextPageToken);
+
+        if (allResultsByTime.length > 0) {
+          console.log(`AWS Cost Explorer API Success! Fetched ${allResultsByTime.length} daily entries across all pages.`);
 
           let totalMonthlyCost = 0;
           let todaysCost = 0;
           const dailyMap = {};
           const serviceTotals = {};
 
-          response.ResultsByTime.forEach((result, idx) => {
+          allResultsByTime.forEach((result, idx) => {
             const date = result.TimePeriod.Start;
             let dayTotal = 0;
 
@@ -149,7 +171,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
 
             dayTotal = parseFloat(dayTotal.toFixed(2));
             totalMonthlyCost += dayTotal;
-            if (idx === response.ResultsByTime.length - 1) {
+            if (idx === allResultsByTime.length - 1) {
               todaysCost = dayTotal;
             }
 
@@ -175,7 +197,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
           });
 
           // Service distribution list
-          const colors = ['#FF9900', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B', '#64748B'];
+          const colors = ['#FF9900', '#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B', '#64748B', '#06B6D4', '#E11D48', '#84CC16'];
           const serviceDistribution = Object.entries(serviceTotals).map(([name, amount], index) => {
             return {
               name,
@@ -187,22 +209,18 @@ router.get('/overview', authenticateToken, async (req, res) => {
             };
           }).sort((a, b) => b.amount - a.amount);
 
-          // If AWS account returned $0.00 total spend (e.g. brand new account or free tier)
-          const finalTotal = totalMonthlyCost > 0 ? totalMonthlyCost : 0.00;
-
-          return res.json({
-            success: true,
+          const resultPayload = {
             summary: {
-              totalMonthlyCost: finalTotal,
+              totalMonthlyCost,
               todaysCost: parseFloat(todaysCost.toFixed(2)),
               highestCostService: highestService.name,
               highestServiceCost: highestService.amount,
               currency: 'USD',
               monthTrendPercentage: 0.0,
-              forecastMonthEnd: parseFloat((finalTotal * 1.05).toFixed(2))
+              forecastMonthEnd: parseFloat((totalMonthlyCost * 1.05).toFixed(2))
             },
             cloudProviders: [
-              { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: finalTotal, percentage: 100, color: '#FF9900' }
+              { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: totalMonthlyCost, percentage: 100, color: '#FF9900' }
             ],
             dailyBreakdown: dailyBreakdown.length > 0 ? dailyBreakdown : [{ date: endDate, displayDate: 'Today', total: 0, aws: 0, azure: 0, gcp: 0 }],
             serviceDistribution: serviceDistribution.length > 0 ? serviceDistribution : [{ name: 'AWS Cloud', provider: 'AWS', amount: 0, cost: 0, percentage: 100, color: '#FF9900' }],
@@ -215,7 +233,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
                 spikeAmount: '$0.00',
                 reasons: [
                   `Live AWS Cost Explorer connection active for ${user.aws_access_key.slice(0, 6)}...`,
-                  `Total actual billing parsed across ${serviceDistribution.length} AWS services.`
+                  `100% of all billing pages aggregated across ${serviceDistribution.length} AWS services.`
                 ],
                 suggestedAction: `Review ${highestService.name} usage metrics in AWS Console.`,
                 actionLabel: 'Open AWS Cost Console'
@@ -224,9 +242,13 @@ router.get('/overview', authenticateToken, async (req, res) => {
             aiRecommendations: [],
             isDemoMode: false,
             awsError: null,
-            credentialNotice: `Connected directly to Live AWS Cost Explorer API (${user.aws_access_key.slice(0, 6)}...)`
-          });
+            credentialNotice: `Enterprise AWS Cost Explorer Connection Active (${user.aws_access_key.slice(0, 6)}...)`
+          };
 
+          // Store in cache
+          costCache.set(cacheKey, { timestamp: Date.now(), data: resultPayload });
+
+          return res.json({ success: true, ...resultPayload });
         }
 
       } catch (awsError) {
@@ -235,7 +257,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
         return res.json({
           success: false,
           isDemoMode: false,
-          awsError: `AWS API Error (${awsError.name || 'Error'}): ${awsError.message}. Verify that IAM policy 'ce:GetCostAndUsage' is attached to Access Key ${user.aws_access_key.slice(0, 6)}...`,
+          awsError: `AWS API Error (${awsError.name || 'Error'}): ${awsError.message}. Ensure IAM policy 'ce:GetCostAndUsage' is attached to Access Key ${user.aws_access_key.slice(0, 6)}...`,
           summary: { totalMonthlyCost: 0, todaysCost: 0, highestCostService: 'N/A', highestServiceCost: 0, currency: 'USD', monthTrendPercentage: 0, forecastMonthEnd: 0 },
           cloudProviders: [],
           dailyBreakdown: [],
@@ -246,7 +268,6 @@ router.get('/overview', authenticateToken, async (req, res) => {
       }
     }
 
-    // Fallback if no AWS keys provided
     const data = generateDemoCostData(daysCount);
     return res.json({ success: true, ...data });
 
