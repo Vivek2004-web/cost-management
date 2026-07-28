@@ -1,5 +1,5 @@
 {
-  "name": "aws-cost-monitor-server",
+  "name": "aws-cost-monitor-backend",
   "version": "1.0.0",
   "description": "Backend API for AWS Cloud Cost Monitor",
   "main": "src/index.js",

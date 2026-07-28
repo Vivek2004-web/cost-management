@@ -36,7 +36,7 @@ A full-stack, dynamic cloud financial management web application built to monito
 
 ### 1. Start the Backend API Server
 ```bash
-cd server
+cd backend
 npm install
 npm run dev
 ```
@@ -45,7 +45,7 @@ npm run dev
 ### 2. Start the Frontend Development Client
 Open a new terminal tab:
 ```bash
-cd client
+cd frontend
 npm install
 npm run dev
 ```

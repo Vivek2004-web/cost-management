@@ -1,8 +1,8 @@
 node_modules/
 .DS_Store
-client/dist/
-server/data/*.db
-server/data/*.db-wal
-server/data/*.db-shm
+frontend/dist/
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
 .env
 .env.local

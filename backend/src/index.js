@@ -38,7 +38,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve frontend static build
-const clientBuildPath = path.join(__dirname, '../../client/dist');
+const clientBuildPath = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(clientBuildPath));
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
