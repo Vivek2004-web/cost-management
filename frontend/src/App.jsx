@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Cloud, Loader2 } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import { ToastProvider } from './components/Toast';
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -47,27 +49,41 @@ export default function App() {
     setToken('');
   };
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF9900' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>☁️</div>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Initializing AWS Cloud Monitor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!token || !user) {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
-  }
-
   return (
-    <Dashboard
-      user={user}
-      token={token}
-      onLogout={handleLogout}
-      onUpdateUser={(updatedUser) => setUser(updatedUser)}
-    />
+    <ToastProvider>
+      {loading ? (
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)' }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '20px',
+              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2))',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 30px rgba(59, 130, 246, 0.25)'
+            }}>
+              <Cloud size={32} color="#3B82F6" />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.95rem', fontWeight: 500 }}>
+              <Loader2 size={16} className="spin-anim" color="#3B82F6" />
+              Initializing Cloud Financial Engine...
+            </div>
+          </div>
+        </div>
+      ) : !token || !user ? (
+        <LoginPage onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <Dashboard
+          user={user}
+          token={token}
+          onLogout={handleLogout}
+          onUpdateUser={(updatedUser) => setUser(updatedUser)}
+        />
+      )}
+    </ToastProvider>
   );
 }
+

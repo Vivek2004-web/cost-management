@@ -1,95 +1,155 @@
-# ☁️ AWS Cloud Cost Monitor & Optimizer
+<div align="center">
 
-A full-stack, dynamic cloud financial management web application built to monitor, analyze, and optimize AWS spending in real-time. Features interactive cost analytics, budget alerts, AI optimization recommendations, SQLite user database record-keeping, Docker containerization, EC2 deployment automation, and CI/CD via GitHub Actions.
+# ☁️ Cloud Cost Monitor & FinOps Optimizer
 
----
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/Vivek2004-web/cost-management)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![Express](https://img.shields.io/badge/Express-4.18-000000?style=for-the-badge&logo=express)](https://expressjs.com/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-## 🌟 Key Features
+**An Enterprise-Grade, Full-Stack Cloud Financial Management & FinOps Platform**
 
-- 📊 **Dashboard with Total Monthly Cost**: Real-time spending overview with month-over-month trend percentages and monthly run-rate forecast.
-- 💰 **Today's Cloud Cost**: Current day spending metrics & daily expense run rate.
-- ☁️ **Highest-Cost AWS Service**: Instant tracking of top cost driver (EC2, RDS, S3, Lambda, EKS, etc.).
-- 📈 **Daily Spending Charts**: Interactive historical area charts & service allocation pie charts powered by Recharts.
-- 🎯 **Budget Tracking & Alerting**: Configurable budget targets per category with visual progress bars and warning thresholds (e.g. 80%, 100%).
-- 💡 **Cost Optimization Recommendations**: Automated recommendations for idle EC2 instances, unattached EBS volumes, S3 lifecycle transitions, and Savings Plans with estimated monthly savings.
-- 🔐 **User Authentication & Persistent Record Keeping**: Full JWT-based auth (Register/Login) powered by Express and SQLite (`cloud_monitor.db`).
-- 🔗 **AWS Cost Explorer API Integration**: Support for live AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`) plus seamless Demo Mode toggle with realistic data simulation.
-- 🐳 **Docker Containerization**: Production-ready multi-container setup (`docker-compose.yml`, `Dockerfile.backend`, `Dockerfile.frontend`).
-- ☁️ **EC2 Deployment Script**: 1-command deployment script (`deploy-ec2.sh`) for AWS EC2 Ubuntu instances.
-- 🔄 **CI/CD with GitHub Actions**: Automated test, build, and SSH deployment pipeline (`.github/workflows/deploy.yml`).
+*Monitor, analyze, forecast, and optimize multi-cloud infrastructure spending across AWS, Azure, and GCP in real time.*
+
+</div>
 
 ---
 
-## 🏗️ Architecture Stack
+## 🌟 Overview
 
-- **Frontend**: React 18, Vite, Recharts, Lucide React Icons, Custom Glassmorphism CSS design system.
-- **Backend**: Node.js, Express.js, SQLite (`better-sqlite3`), JSON Web Tokens (`jsonwebtoken`), `bcryptjs`, AWS SDK (`@aws-sdk/client-cost-explorer`).
-- **DevOps**: Docker, Docker Compose, Nginx, Shell scripts, GitHub Actions.
+**Cloud Cost Monitor** provides cloud infrastructure engineers and financial leaders with real-time cost visibility, intelligent budget tracking, automated cost-saving recommendations, and multi-cloud breakdown analytics. 
+
+Whether running live with official AWS SDK credentials or using built-in interactive Demo Mode, the platform delivers predictive analytics, anomaly alerts, invoice generation, and AI-driven optimization advice.
 
 ---
 
-## 🚀 Quick Start (Running Locally)
+## 🏗️ Architecture Blueprint
+
+```mermaid
+graph TD
+    subgraph Client ["Client Layer (Frontend)"]
+        UI["React 18 + Vite Web App"]
+        Glass["Glassmorphism UI / Lucide Icons"]
+        Charts["Recharts Visualizations"]
+        UI --> Glass
+        UI --> Charts
+    end
+
+    subgraph API ["Application Layer (Backend API)"]
+        Server["Express.js Server (Port 5001)"]
+        Auth["JWT & bcrypt Authentication"]
+        ErrorMiddleware["Standardized Error Middleware"]
+        Server --> Auth
+        Server --> ErrorMiddleware
+    end
+
+    subgraph Data ["Data & Services Layer"]
+        DB[("SQLite Database<br/>(better-sqlite3)")]
+        SDK["AWS SDK Cost Explorer"]
+        Demo["Demo Simulation Engine"]
+    end
+
+    UI -->|REST API + JWT Bearer Token| Server
+    Server -->|User & Settings Records| DB
+    Server -->|Live Queries (with AWS Creds)| SDK
+    Server -->|Fallback Analytics| Demo
+```
+
+---
+
+## ⚡ Key Features
+
+- 📊 **Real-time Spending Dashboard**: Monthly total cost overview, daily run rate, month-over-month trend percentages, and end-of-month financial forecasting.
+- 🎯 **Budget Tracking & Anomaly Alerts**: Custom target budgets per category with progressive visual warnings at 80% and 100% thresholds.
+- 💡 **AI Optimization Assistant**: Automated recommendations for idle EC2 instances, unattached EBS storage volumes, S3 lifecycle policies, and Savings Plans.
+- 🔍 **Interactive Command Palette**: Quick access keyboard navigation (`Cmd/Ctrl + K`) across resources, reports, and settings.
+- 📑 **Invoice & Report Generator**: Generate exportable PDF invoices and expense summaries powered by `jspdf`.
+- 🔐 **Secure JWT Authentication**: Account registration and login powered by bcrypt password hashing and persistent SQLite storage.
+- 🐳 **Production Docker Containerization**: Multi-container orchestra using Nginx reverse proxy, Vite frontend build, and Express backend API.
+- 🔄 **Automated CI/CD**: GitHub Actions workflow for continuous testing, Docker build verification, and deployment.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology | Usage |
+| :--- | :--- | :--- |
+| **Frontend** | React 18, Vite | Single-page application client framework |
+| **Styling** | Custom Glassmorphism CSS | Responsive, dark-mode design system |
+| **Charts** | Recharts | Interactive daily expense area & pie charts |
+| **Icons** | Lucide React | Modern vector icon system |
+| **Backend API** | Node.js, Express.js | REST API server framework |
+| **Database** | SQLite (`better-sqlite3`) | Persistent storage for users, settings & budgets |
+| **Security** | JWT, `bcryptjs` | Authentication & token verification |
+| **SDK** | `@aws-sdk/client-cost-explorer` | Official AWS Cost Explorer integration |
+| **DevOps** | Docker, Docker Compose, Nginx | Containerization & reverse proxy |
+
+---
+
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Node.js 18 or 20+ installed
-- npm 9+
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
 
-### 1. Start the Backend API Server
+### 1. Backend API Setup
 ```bash
 cd backend
+cp .env.example .env
 npm install
 npm run dev
 ```
-*The Express backend server will start on `http://localhost:5001`.*
+*Backend server will listen at `http://localhost:5001`.*
 
-### 2. Start the Frontend Development Client
-Open a new terminal tab:
+### 2. Frontend Web App Setup
+Open a second terminal window:
 ```bash
 cd frontend
+cp .env.example .env
 npm install
 npm run dev
 ```
-*The React Vite app will run on `http://localhost:3000`.*
+*Frontend client will run at `http://localhost:3000`.*
 
 ---
 
-## 🐳 Running with Docker & Docker Compose
+## 🐳 Docker Deployment
 
-Launch the entire full-stack application (Nginx + Frontend + Express + SQLite DB) with a single command:
+To spin up the entire application stack in containerized production mode:
 
 ```bash
 docker compose up --build -d
 ```
 
-- **Frontend Web UI**: `http://localhost:80`
+- **Frontend App**: `http://localhost:80`
 - **Backend Health Check**: `http://localhost:5001/api/health`
 
 ---
 
-## ☁️ Deploying to AWS EC2
+## 🔌 API Endpoints Summary
 
-1. Launch an Ubuntu EC2 instance on AWS (e.g. `t3.micro` or `t3.small`).
-2. Open ports `80` (HTTP) and `5001` in your EC2 Security Group inbound rules.
-3. SSH into your instance and run:
-```bash
-git clone <your-repository-url>
-cd <repository-folder>
-chmod +x scripts/deploy-ec2.sh
-./scripts/deploy-ec2.sh
-```
+| Method | Endpoint | Description | Auth |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/api/auth/register` | Register a new user account | 🔓 |
+| `POST` | `/api/auth/login` | Authenticate user & issue JWT | 🔓 |
+| `GET` | `/api/auth/me` | Retrieve active user profile | 🔒 |
+| `PUT` | `/api/auth/settings` | Update AWS credentials & Demo Mode | 🔒 |
+| `GET` | `/api/costs/overview` | Fetch financial overview & chart data | 🔒 |
+| `GET` | `/api/costs/recommendations` | Get AI cost optimization suggestions | 🔒 |
+| `GET` | `/api/budgets` | Fetch active user budget targets | 🔒 |
+| `POST` | `/api/budgets` | Create new category budget target | 🔒 |
+| `DELETE` | `/api/budgets/:id` | Remove budget target | 🔒 |
+| `GET` | `/api/health` | System health check & DB status | 🔓 |
 
 ---
 
-## 🔌 API Endpoints Reference
+## 🤝 Contributing
 
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Register new user account | No |
-| `POST` | `/api/auth/login` | Authenticate user & receive JWT | No |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile | Yes |
-| `PUT` | `/api/auth/settings` | Update AWS credentials & Demo Mode | Yes |
-| `GET` | `/api/costs/overview` | Fetch total cost, today's cost & daily charts | Yes |
-| `GET` | `/api/costs/recommendations` | Get AI cost-saving recommendations | Yes |
-| `GET` | `/api/budgets` | Get active user budgets | Yes |
-| `POST` | `/api/budgets` | Set new budget target | Yes |
-| `DELETE` | `/api/budgets/:id` | Remove budget target | Yes |
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and submission process.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

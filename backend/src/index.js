@@ -47,15 +47,11 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
+const errorHandler = require('./middleware/errorHandler');
+
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Unhandled Server Error:', err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+app.use(errorHandler);
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Multi-Cloud FinOps Assistant Application running on http://localhost:${PORT}`);

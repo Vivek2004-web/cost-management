@@ -289,3 +289,9 @@ body {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
