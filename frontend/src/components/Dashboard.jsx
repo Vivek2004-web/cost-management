@@ -315,6 +315,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
               <CostCharts
                 dailyBreakdown={displayData?.dailyBreakdown}
                 serviceDistribution={displayData?.serviceDistribution}
+                dailyServiceBreakdown={displayData?.dailyServiceBreakdown}
                 period={period}
                 onPeriodChange={handlePeriodChange}
               />

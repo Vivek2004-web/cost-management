@@ -48,6 +48,21 @@ function generateDemoCostData(daysCount = 30) {
     });
   }
 
+  const dailyServiceBreakdown = dailyBreakdown.map(day => {
+    const item = {
+      date: day.date,
+      displayDate: day.displayDate,
+      total: day.total
+    };
+    serviceDistribution.forEach(srv => {
+      const baseShare = (srv.amount / 3120.00) * day.total;
+      const dayNum = new Date(day.date).getDate();
+      const variation = (Math.sin(dayNum + srv.name.length) * 0.12) + 1;
+      item[srv.name] = parseFloat(Math.max(1, baseShare * variation).toFixed(2));
+    });
+    return item;
+  });
+
   const aiCostAdvisor = [
     {
       id: 'advisor-1',
@@ -78,6 +93,7 @@ function generateDemoCostData(daysCount = 30) {
     cloudProviders,
     serviceDistribution,
     dailyBreakdown,
+    dailyServiceBreakdown,
     aiCostAdvisor,
     isDemoMode: true
   };
@@ -223,6 +239,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
               { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: totalMonthlyCost, percentage: 100, color: '#FF9900' }
             ],
             dailyBreakdown: dailyBreakdown.length > 0 ? dailyBreakdown : [{ date: endDate, displayDate: 'Today', total: 0, aws: 0, azure: 0, gcp: 0 }],
+            dailyServiceBreakdown: dailyBreakdown,
             serviceDistribution: serviceDistribution.length > 0 ? serviceDistribution : [{ name: 'AWS Cloud', provider: 'AWS', amount: 0, cost: 0, percentage: 100, color: '#FF9900' }],
             aiCostAdvisor: [
               {
