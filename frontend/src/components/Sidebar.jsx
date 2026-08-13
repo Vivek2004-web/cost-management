@@ -1,25 +1,17 @@
 import React from 'react';
 import {
-  Zap, Layers, Bot, Target, AlertTriangle, PieChart, Globe, Users,
-  ShieldCheck, CheckSquare, FileText, Play, Download, Settings, ChevronLeft, ChevronRight, Cloud
+  Zap, Bot, Target, AlertTriangle, PieChart, Layers, Settings, ChevronLeft, ChevronRight, Cloud
 } from 'lucide-react';
 
 export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onSelectModule }) {
   const navigationItems = [
-    { id: 'overview', label: 'Executive Overview', icon: Zap, badge: 'HEALTH: 92' },
-    { id: 'advisor', label: 'AI Cost Advisor', icon: Bot, badge: 'SAVE $1.3K' },
-    { id: 'inventory', label: 'Resource Inventory', icon: Layers, badge: '28 ACTIVE' },
-    { id: 'budgets', label: 'Budget Center', icon: Target },
-    { id: 'anomalies', label: 'Alert Center', icon: AlertTriangle, badge: '2 SPIKES' },
-    { id: 'breakdown', label: 'Cost Breakdown', icon: PieChart },
-    { id: 'regions', label: 'Region Analysis', icon: Globe },
-    { id: 'teams', label: 'Team Cost Center', icon: Users },
-    { id: 'carbon', label: 'Carbon Impact', icon: ShieldCheck, badge: 'CO₂ -14%' },
-    { id: 'automation', label: 'Automation Rules', icon: CheckSquare },
-    { id: 'timeline', label: 'Activity Timeline', icon: FileText },
-    { id: 'quick', label: 'Quick Actions', icon: Play },
-    { id: 'reports', label: 'Reports & Export', icon: Download },
-    { id: 'settings', label: 'Credentials & Settings', icon: Settings }
+    { id: 'overview',   label: 'Overview',          icon: Zap,           badge: null },
+    { id: 'charts',     label: 'Cost Charts',        icon: PieChart,      badge: null },
+    { id: 'budgets',    label: 'Budget Tracker',     icon: Target,        badge: null },
+    { id: 'advisor',    label: 'AI Advisor',         icon: Bot,           badge: 'SAVE $1.3K' },
+    { id: 'inventory',  label: 'Resource Inventory', icon: Layers,        badge: null },
+    { id: 'anomalies',  label: 'Anomaly Alerts',     icon: AlertTriangle, badge: '2 SPIKES' },
+    { id: 'settings',   label: 'Settings',           icon: Settings,      badge: null },
   ];
 
   return (
