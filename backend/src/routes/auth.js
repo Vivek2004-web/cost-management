@@ -198,6 +198,14 @@ router.put('/settings', authenticateToken, (req, res) => {
       `Saved credentials. Live Calculation Mode Active: ${hasKeys ? 'YES' : 'NO'}`
     );
 
+    // Invalidate cost cache so newly updated API keys take effect immediately
+    try {
+      const costRoutes = require('./costs');
+      if (costRoutes.clearCache) costRoutes.clearCache();
+    } catch (err) {
+      // ignore
+    }
+
     res.json({
       success: true,
       message: 'Credentials saved! Calculating live cost metrics...',

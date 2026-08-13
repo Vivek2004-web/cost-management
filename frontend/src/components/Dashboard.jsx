@@ -27,10 +27,11 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
   const [showSettings, setShowSettings] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
 
-  const fetchData = async (selectedPeriod = period) => {
+  const fetchData = async (selectedPeriod = period, forceRefresh = false) => {
     setRefreshing(true);
     try {
-      const costRes = await fetch(`/api/costs/overview?period=${selectedPeriod}`, {
+      const url = `/api/costs/overview?period=${selectedPeriod}${forceRefresh ? '&refresh=true' : ''}`;
+      const costRes = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const costJson = await costRes.json();
@@ -137,7 +138,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
           onOpenQuickActions={() => setShowQuickActions(true)}
           onToggleDemoMode={handleToggleDemoMode}
           onLogout={onLogout}
-          onRefresh={() => fetchData(period)}
+          onRefresh={() => fetchData(period, true)}
           isRefreshing={refreshing}
         />
 

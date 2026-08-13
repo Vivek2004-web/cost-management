@@ -114,10 +114,11 @@ router.get('/overview', authenticateToken, async (req, res) => {
       return res.json({ success: true, ...data });
     }
 
-    // Check cache first for rapid requests
+    // Check cache first for rapid requests (unless force refresh requested)
     const cacheKey = `${userId}_${daysCount}`;
+    const forceRefresh = req.query.refresh === 'true';
     const cached = costCache.get(cacheKey);
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+    if (!forceRefresh && cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
       console.log(`[Cache Hit] Serving cached AWS Cost Explorer data for user ${user.email}`);
       return res.json({ success: true, ...cached.data });
     }
@@ -135,17 +136,19 @@ router.get('/overview', authenticateToken, async (req, res) => {
           }
         });
 
+        // Set End date to tomorrow so today's usage (up to end of day) is included in AWS Cost Explorer's [Start, End) range
         const endDateObj = new Date();
+        endDateObj.setDate(endDateObj.getDate() + 1);
+        const endDate = endDateObj.toISOString().split('T')[0];
+
         const startDateObj = new Date();
         startDateObj.setDate(startDateObj.getDate() - (daysCount || 30));
-
-        const endDate = endDateObj.toISOString().split('T')[0];
         const startDate = startDateObj.toISOString().split('T')[0];
 
         let nextPageToken = null;
         const allResultsByTime = [];
 
-        // PAGINATION LOOP: Fetch 100% of all billing pages from AWS for high-usage enterprise accounts
+        // PAGINATION LOOP: Fetch 100% of all billing pages from AWS
         do {
           const command = new GetCostAndUsageCommand({
             TimePeriod: { Start: startDate, End: endDate },
@@ -167,12 +170,18 @@ router.get('/overview', authenticateToken, async (req, res) => {
 
           let totalMonthlyCost = 0;
           let todaysCost = 0;
-          const dailyMap = {};
+          const dailyBreakdown = [];
+          const dailyServiceBreakdown = [];
           const serviceTotals = {};
 
           allResultsByTime.forEach((result, idx) => {
             const date = result.TimePeriod.Start;
             let dayTotal = 0;
+            const serviceDayObj = {
+              date,
+              displayDate: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+              total: 0
+            };
 
             if (result.Groups && result.Groups.length > 0) {
               result.Groups.forEach(group => {
@@ -181,42 +190,32 @@ router.get('/overview', authenticateToken, async (req, res) => {
                 if (amount > 0) {
                   dayTotal += amount;
                   serviceTotals[serviceName] = (serviceTotals[serviceName] || 0) + amount;
+                  serviceDayObj[serviceName] = parseFloat(amount.toFixed(2));
                 }
               });
             }
 
-            dayTotal = parseFloat(dayTotal.toFixed(2));
             totalMonthlyCost += dayTotal;
             if (idx === allResultsByTime.length - 1) {
               todaysCost = dayTotal;
             }
 
-            dailyMap[date] = {
+            const formattedDayTotal = parseFloat(dayTotal.toFixed(2));
+            serviceDayObj.total = formattedDayTotal;
+
+            dailyBreakdown.push({
               date,
               displayDate: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-              total: dayTotal,
-              aws: dayTotal,
+              total: formattedDayTotal,
+              aws: formattedDayTotal,
               azure: 0,
               gcp: 0
-            };
+            });
+
+            dailyServiceBreakdown.push(serviceDayObj);
           });
 
           totalMonthlyCost = parseFloat(totalMonthlyCost.toFixed(2));
-          const dailyBreakdown = Object.values(dailyMap);
-
-          // If real AWS costs are near-zero (< $1), fall back to demo data with a note
-          // This avoids showing a confusingly empty $0.00 dashboard
-          if (totalMonthlyCost < 1) {
-            console.log(`AWS account has minimal usage ($${totalMonthlyCost}). Serving demo data.`);
-            const demoData = generateDemoCostData(daysCount);
-            // isDemoMode: true so navbar correctly shows "DEMO SIMULATION" — not misleading "LIVE"
-            return res.json({
-              success: true,
-              ...demoData,
-              isDemoMode: true,
-              awsError: null
-            });
-          }
 
           // Find service with highest actual cost
           let highestService = { name: 'AWS Services', amount: 0 };
@@ -253,7 +252,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
               { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: totalMonthlyCost, percentage: 100, color: '#FF9900' }
             ],
             dailyBreakdown: dailyBreakdown.length > 0 ? dailyBreakdown : [{ date: endDate, displayDate: 'Today', total: 0, aws: 0, azure: 0, gcp: 0 }],
-            dailyServiceBreakdown: dailyBreakdown,
+            dailyServiceBreakdown: dailyServiceBreakdown.length > 0 ? dailyServiceBreakdown : dailyBreakdown,
             serviceDistribution: serviceDistribution.length > 0 ? serviceDistribution : [{ name: 'AWS Cloud', provider: 'AWS', amount: 0, cost: 0, percentage: 100, color: '#FF9900' }],
             aiCostAdvisor: [
               {
@@ -264,7 +263,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
                 spikeAmount: `$${highestService.amount.toFixed(2)}`,
                 reasons: [
                   `Live AWS Cost Explorer connection active for ${user.aws_access_key.slice(0, 6)}...`,
-                  `${serviceDistribution.length} AWS services found across ${daysCount} days.`
+                  `${serviceDistribution.length} AWS service(s) aggregated from your live AWS billing console.`
                 ],
                 suggestedAction: `Review ${highestService.name} usage metrics in AWS Console.`,
                 actionLabel: 'Open AWS Cost Console'
@@ -273,7 +272,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
             aiRecommendations: [],
             isDemoMode: false,
             awsError: null,
-            credentialNotice: `Live AWS data (${user.aws_access_key.slice(0, 6)}...) — $${totalMonthlyCost.toFixed(2)} actual spend`
+            credentialNotice: `Live AWS Cost Explorer Connected (${user.aws_access_key.slice(0, 6)}...)`
           };
 
           // Store in cache
@@ -307,5 +306,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to query AWS Cost Explorer API.' });
   }
 });
+
+router.clearCache = () => costCache.clear();
 
 module.exports = router;
