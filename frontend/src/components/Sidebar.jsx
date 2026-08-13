@@ -43,18 +43,18 @@ export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onS
               width: '36px',
               height: '36px',
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, #FF9900 0%, #0089D6 50%, #4285F4 100%)',
+              background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(255, 153, 0, 0.4)',
+              boxShadow: '0 0 15px rgba(59, 130, 246, 0.45)',
               flexShrink: 0
             }}>
               <Cloud size={20} color="#FFF" />
             </div>
             {!collapsed && (
-              <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #FFFFFF 0%, #E5E7EB 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                CloudOps<span style={{ color: '#FF9900', WebkitTextFillColor: '#FF9900' }}>.Enterprise</span>
+              <span style={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #60A5FA 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Cloucal
               </span>
             )}
           </div>
