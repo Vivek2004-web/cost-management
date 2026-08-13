@@ -224,7 +224,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
 
               {/* ── Resource Inventory ── */}
               {show('inventory') && (
-                <ResourceInventory />
+                <ResourceInventory token={token} />
               )}
 
               {/* ── Anomaly Radar ── */}

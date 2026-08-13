@@ -1,5 +1,6 @@
 const express = require('express');
 const { CostExplorerClient, GetCostAndUsageCommand } = require('@aws-sdk/client-cost-explorer');
+const { EC2Client, DescribeInstancesCommand } = require('@aws-sdk/client-ec2');
 const db = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 
@@ -304,6 +305,94 @@ router.get('/overview', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching cost overview:', error);
     res.status(500).json({ success: false, message: 'Failed to query AWS Cost Explorer API.' });
+  }
+});
+
+// GET /api/costs/resources - Fetch live EC2 instances from AWS
+router.get('/resources', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+
+    // If demo mode or no AWS credentials, return demo resources
+    if (!user || user.demo_mode === 1 || !user.aws_access_key || !user.aws_secret_key) {
+      return res.json({
+        success: true,
+        isDemo: true,
+        resources: [
+          { id: 'i-09abf721c810a42e1', name: 'prod-api-cluster-worker-01', service: 'EC2 (t3.medium)', provider: 'AWS', region: 'us-east-1', status: 'RUNNING', cost: 420.00, cpu: '14.2%', memory: '4.0 GB', tags: ['env:prod', 'team:engineering'] },
+          { id: 'i-077cc21bb998810a2', name: 'prod-api-cluster-worker-02', service: 'EC2 (t3.medium)', provider: 'AWS', region: 'us-east-1', status: 'IDLE', cost: 420.00, cpu: '4.1%', memory: '4.0 GB', tags: ['env:prod', 'team:engineering'] },
+          { id: 'rds-prod-postgres-main', name: 'prod-db-postgres-primary', service: 'RDS (db.t3.medium)', provider: 'AWS', region: 'us-east-1', status: 'RUNNING', cost: 480.00, cpu: '38.4%', memory: '4.0 GB', tags: ['env:prod', 'team:database'] },
+          { id: 's3-analytics-logs-2026', name: 's3-analytics-raw-logs', service: 'S3 Storage', provider: 'AWS', region: 'us-east-1', status: 'ACTIVE', cost: 280.00, cpu: 'N/A', memory: '8.4 TB', tags: ['env:prod', 'team:analytics'] },
+          { id: 'lambda-auth-verify-user', name: 'auth-jwt-verifier-func', service: 'Lambda Function', provider: 'AWS', region: 'us-east-1', status: 'RUNNING', cost: 65.00, cpu: '2.1%', memory: '128 MB', tags: ['env:prod', 'team:auth'] }
+        ]
+      });
+    }
+
+    const region = user.aws_region || 'us-east-1';
+    console.log(`Fetching live EC2 resources for ${user.email} in region ${region}...`);
+
+    const ec2Client = new EC2Client({
+      region: region,
+      credentials: {
+        accessKeyId: user.aws_access_key.trim(),
+        secretAccessKey: user.aws_secret_key.trim()
+      }
+    });
+
+    const command = new DescribeInstancesCommand({});
+    const response = await ec2Client.send(command);
+
+    const resources = [];
+    if (response.Reservations) {
+      response.Reservations.forEach(reservation => {
+        if (reservation.Instances) {
+          reservation.Instances.forEach(inst => {
+            const nameTag = inst.Tags?.find(t => t.Key.toLowerCase() === 'name')?.Value || inst.InstanceId;
+            const state = inst.State?.Name?.toUpperCase() || 'STOPPED';
+            const type = inst.InstanceType || 't3.micro';
+            const az = inst.Placement?.AvailabilityZone || region;
+            const tagList = (inst.Tags || []).map(t => `${t.Key}:${t.Value}`);
+
+            let estMonthlyCost = 0;
+            if (state === 'RUNNING') {
+              if (type.includes('small')) estMonthlyCost = 15.20;
+              else if (type.includes('medium')) estMonthlyCost = 30.40;
+              else if (type.includes('large')) estMonthlyCost = 60.80;
+              else estMonthlyCost = 7.60;
+            }
+
+            resources.push({
+              id: inst.InstanceId,
+              name: nameTag,
+              service: `EC2 (${type})`,
+              provider: 'AWS',
+              region: az,
+              status: state,
+              cost: estMonthlyCost,
+              cpu: state === 'RUNNING' ? '12.5%' : '0.0%',
+              memory: type,
+              tags: tagList.length > 0 ? tagList : ['env:aws', `type:${type}`]
+            });
+          });
+        }
+      });
+    }
+
+    console.log(`Live EC2 Success! Retrieved ${resources.length} instances.`);
+    return res.json({
+      success: true,
+      isDemo: false,
+      resources
+    });
+
+  } catch (err) {
+    console.error('Error fetching live EC2 instances:', err.message);
+    return res.json({
+      success: false,
+      message: `EC2 API Error: ${err.message}`,
+      resources: []
+    });
   }
 });
 
