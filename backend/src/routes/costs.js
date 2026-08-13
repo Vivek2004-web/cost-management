@@ -137,13 +137,19 @@ router.get('/overview', authenticateToken, async (req, res) => {
           }
         });
 
-        // Set End date to tomorrow so today's usage (up to end of day) is included in AWS Cost Explorer's [Start, End) range
+        // Set End date to tomorrow so today's usage is included in AWS Cost Explorer's [Start, End) range
         const endDateObj = new Date();
         endDateObj.setDate(endDateObj.getDate() + 1);
         const endDate = endDateObj.toISOString().split('T')[0];
 
+        // Start date: beginning of previous month to ensure 100% full-month billing parity with AWS Billing Console
         const startDateObj = new Date();
-        startDateObj.setDate(startDateObj.getDate() - (daysCount || 30));
+        if (daysCount <= 60) {
+          startDateObj.setMonth(startDateObj.getMonth() - 1);
+          startDateObj.setDate(1);
+        } else {
+          startDateObj.setDate(startDateObj.getDate() - daysCount);
+        }
         const startDate = startDateObj.toISOString().split('T')[0];
 
         let nextPageToken = null;
@@ -170,7 +176,15 @@ router.get('/overview', authenticateToken, async (req, res) => {
           console.log(`AWS Cost Explorer API Success! Fetched ${allResultsByTime.length} daily entries across all pages.`);
 
           let totalMonthlyCost = 0;
+          let mtdCost = 0;
+          let lastMonthTotalCost = 0;
           let todaysCost = 0;
+
+          const currentMonthPrefix = new Date().toISOString().slice(0, 7); // e.g. "2026-08"
+          const prevMonthObj = new Date();
+          prevMonthObj.setMonth(prevMonthObj.getMonth() - 1);
+          const lastMonthPrefix = prevMonthObj.toISOString().slice(0, 7); // e.g. "2026-07"
+
           const dailyBreakdown = [];
           const dailyServiceBreakdown = [];
           const serviceTotals = {};
@@ -197,6 +211,12 @@ router.get('/overview', authenticateToken, async (req, res) => {
             }
 
             totalMonthlyCost += dayTotal;
+            if (date.startsWith(currentMonthPrefix)) {
+              mtdCost += dayTotal;
+            } else if (date.startsWith(lastMonthPrefix)) {
+              lastMonthTotalCost += dayTotal;
+            }
+
             if (idx === allResultsByTime.length - 1) {
               todaysCost = dayTotal;
             }
@@ -216,7 +236,12 @@ router.get('/overview', authenticateToken, async (req, res) => {
             dailyServiceBreakdown.push(serviceDayObj);
           });
 
-          totalMonthlyCost = parseFloat(totalMonthlyCost.toFixed(2));
+          const mtdFormatted = parseFloat(mtdCost.toFixed(2));
+          const lastMonthFormatted = parseFloat(lastMonthTotalCost.toFixed(2));
+          const grandTotalFormatted = parseFloat(totalMonthlyCost.toFixed(2));
+
+          // Use MTD cost as current monthly spend (or grand total if MTD is 0)
+          const activeMonthlySpend = mtdFormatted > 0 ? mtdFormatted : grandTotalFormatted;
 
           // Find service with highest actual cost
           let highestService = { name: 'AWS Services', amount: 0 };
@@ -234,20 +259,21 @@ router.get('/overview', authenticateToken, async (req, res) => {
               provider: 'AWS',
               amount: parseFloat(amount.toFixed(2)),
               cost: parseFloat(amount.toFixed(2)),
-              percentage: parseFloat(((amount / (totalMonthlyCost || 1)) * 100).toFixed(1)),
+              percentage: parseFloat(((amount / (grandTotalFormatted || 1)) * 100).toFixed(1)),
               color: colors[index % colors.length]
             };
           }).sort((a, b) => b.amount - a.amount);
 
           const resultPayload = {
             summary: {
-              totalMonthlyCost,
+              totalMonthlyCost: activeMonthlySpend,
+              lastMonthCost: lastMonthFormatted,
               todaysCost: parseFloat(todaysCost.toFixed(2)),
               highestCostService: highestService.name,
               highestServiceCost: highestService.amount,
               currency: 'USD',
-              monthTrendPercentage: 0.0,
-              forecastMonthEnd: parseFloat((totalMonthlyCost * 1.05).toFixed(2))
+              monthTrendPercentage: lastMonthFormatted > 0 ? parseFloat((((activeMonthlySpend - lastMonthFormatted) / lastMonthFormatted) * 100).toFixed(1)) : 0.0,
+              forecastMonthEnd: parseFloat((activeMonthlySpend * 2.2).toFixed(2))
             },
             cloudProviders: [
               { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: totalMonthlyCost, percentage: 100, color: '#FF9900' }

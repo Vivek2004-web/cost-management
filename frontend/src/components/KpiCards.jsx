@@ -12,11 +12,11 @@ export default function KpiCards({ summary, budgets }) {
       marginBottom: '28px'
     }}>
       
-      {/* 📊 Card 1: Total Monthly Cost */}
+      {/* 📊 Card 1: Month-to-Date Cloud Cost */}
       <div className="glass-card-interactive" style={{ padding: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-            Total Monthly Cost
+            Month-to-Date Cost (MTD)
           </span>
           <div style={{
             width: '40px',
@@ -36,21 +36,8 @@ export default function KpiCards({ summary, budgets }) {
           ${summary?.totalMonthlyCost ? summary.totalMonthlyCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '2px',
-            color: summary?.monthTrendPercentage > 0 ? '#F87171' : '#34D399',
-            fontWeight: 700,
-            background: summary?.monthTrendPercentage > 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-            padding: '2px 8px',
-            borderRadius: '6px'
-          }}>
-            <TrendingUp size={14} />
-            {summary?.monthTrendPercentage ? (summary.monthTrendPercentage > 0 ? `+${summary.monthTrendPercentage}%` : `${summary.monthTrendPercentage}%`) : '+8.4%'}
-          </span>
-          <span style={{ color: 'var(--text-muted)' }}>vs previous month</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          <span>Last Month: <strong style={{ color: '#FFF' }}>${summary?.lastMonthCost ? summary.lastMonthCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong></span>
         </div>
       </div>
 
