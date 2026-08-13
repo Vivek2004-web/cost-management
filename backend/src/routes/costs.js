@@ -207,14 +207,14 @@ router.get('/overview', authenticateToken, async (req, res) => {
           // If real AWS costs are near-zero (< $1), fall back to demo data with a note
           // This avoids showing a confusingly empty $0.00 dashboard
           if (totalMonthlyCost < 1) {
-            console.log(`AWS account has minimal usage ($${totalMonthlyCost}). Serving demo data with live-credentials notice.`);
+            console.log(`AWS account has minimal usage ($${totalMonthlyCost}). Serving demo data.`);
             const demoData = generateDemoCostData(daysCount);
+            // isDemoMode: true so navbar correctly shows "DEMO SIMULATION" — not misleading "LIVE"
             return res.json({
               success: true,
               ...demoData,
-              isDemoMode: false,
-              awsError: null,
-              credentialNotice: `AWS connected (${user.aws_access_key.slice(0, 6)}...) — account has <$1 in real charges. Showing demo data to illustrate full dashboard capabilities.`
+              isDemoMode: true,
+              awsError: null
             });
           }
 
