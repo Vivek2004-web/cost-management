@@ -95,7 +95,7 @@ export default function LoginPage({ onLoginSuccess }) {
       }}>
         {/* Left Side: Product Feature Highlights */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(255, 153, 0, 0.12) 0%, rgba(59, 130, 246, 0.1) 100%)',
+          background: 'linear-gradient(135deg, rgba(0, 255, 135, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%)',
           borderRight: '1px solid var(--border-color)',
           padding: '48px 40px',
           display: 'flex',
@@ -108,15 +108,15 @@ export default function LoginPage({ onLoginSuccess }) {
                 width: '46px',
                 height: '46px',
                 borderRadius: '14px',
-                background: 'linear-gradient(135deg, #FF9900 0%, #FF5500 100%)',
+                background: 'linear-gradient(135deg, #00FF87 0%, #10B981 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 25px rgba(255, 153, 0, 0.4)'
+                boxShadow: '0 0 25px rgba(0, 255, 135, 0.45)'
               }}>
-                <Cloud size={26} color="#0A0D14" strokeWidth={2.5} />
+                <Cloud size={26} color="#05070A" strokeWidth={2.5} />
               </div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>CloudCost.AWS</h2>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Cloucal FinOps</h2>
             </div>
 
             <h3 style={{ fontSize: '1.75rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '16px' }}>
@@ -128,7 +128,7 @@ export default function LoginPage({ onLoginSuccess }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <CheckCircle2 size={20} color="#FF9900" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <CheckCircle2 size={20} color="#00FF87" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div>
                   <h4 style={{ fontSize: '0.9rem', fontWeight: 700 }}>AWS Cost Explorer API</h4>
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Automated cost breakdown across EC2, RDS, S3 & Lambda</p>

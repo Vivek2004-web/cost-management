@@ -18,7 +18,7 @@ export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onS
     <aside style={{
       width: collapsed ? '72px' : '260px',
       transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      background: 'rgba(12, 16, 26, 0.95)',
+      background: 'rgba(5, 12, 8, 0.95)',
       backdropFilter: 'blur(20px)',
       borderRight: '1px solid var(--border-color)',
       minHeight: '100vh',
@@ -43,17 +43,17 @@ export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onS
               width: '36px',
               height: '36px',
               borderRadius: '10px',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
+              background: 'linear-gradient(135deg, #00FF87 0%, #10B981 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(59, 130, 246, 0.45)',
+              boxShadow: '0 0 18px rgba(0, 255, 135, 0.5)',
               flexShrink: 0
             }}>
-              <Cloud size={20} color="#FFF" />
+              <Cloud size={20} color="#05070A" />
             </div>
             {!collapsed && (
-              <span style={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #60A5FA 0%, #06B6D4 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #00FF87 0%, #34D399 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Cloucal
               </span>
             )}
@@ -79,12 +79,12 @@ export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onS
                 key={item.id}
                 onClick={() => onSelectModule(item.id)}
                 style={{
-                  background: isActive ? 'linear-gradient(90deg, rgba(255,153,0,0.18) 0%, rgba(255,153,0,0.04) 100%)' : 'transparent',
+                  background: isActive ? 'linear-gradient(90deg, rgba(0, 255, 135, 0.18) 0%, rgba(0, 255, 135, 0.03) 100%)' : 'transparent',
                   border: '1px solid',
-                  borderColor: isActive ? 'rgba(255,153,0,0.4)' : 'transparent',
+                  borderColor: isActive ? 'rgba(0, 255, 135, 0.45)' : 'transparent',
                   borderRadius: '10px',
                   padding: collapsed ? '12px 0' : '10px 14px',
-                  color: isActive ? '#FF9900' : 'var(--text-muted)',
+                  color: isActive ? '#00FF87' : 'var(--text-muted)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: collapsed ? 'center' : 'space-between',
@@ -110,8 +110,8 @@ export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onS
                     fontWeight: 800,
                     padding: '2px 6px',
                     borderRadius: '6px',
-                    background: isActive ? 'rgba(255,153,0,0.25)' : 'rgba(255,255,255,0.06)',
-                    color: isActive ? '#FF9900' : 'var(--text-muted)'
+                    background: isActive ? 'rgba(0, 255, 135, 0.25)' : 'rgba(255,255,255,0.06)',
+                    color: isActive ? '#00FF87' : 'var(--text-muted)'
                   }}>
                     {item.badge}
                   </span>

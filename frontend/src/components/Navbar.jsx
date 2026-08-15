@@ -36,7 +36,7 @@ export default function Navbar({
               width: '260px'
             }}
           >
-            <Search size={16} color="#FF9900" />
+            <Search size={16} color="#00FF87" />
             <span style={{ flex: 1, textAlign: 'left' }}>Search modules...</span>
             <kbd style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', border: '1px solid var(--border-color)' }}>
               Ctrl K
@@ -49,11 +49,11 @@ export default function Navbar({
           <button
             onClick={onToggleDemoMode}
             style={{
-              background: isDemoMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-              border: isDemoMode ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(16, 185, 129, 0.4)',
+              background: isDemoMode ? 'rgba(245, 158, 11, 0.15)' : 'rgba(0, 255, 135, 0.15)',
+              border: isDemoMode ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(0, 255, 135, 0.4)',
               borderRadius: '20px',
               padding: '6px 14px',
-              color: isDemoMode ? '#FBBF24' : '#34D399',
+              color: isDemoMode ? '#FBBF24' : '#00FF87',
               fontSize: '0.8rem',
               fontWeight: 800,
               display: 'flex',
@@ -115,13 +115,13 @@ export default function Navbar({
               width: '34px',
               height: '34px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)',
+              background: 'linear-gradient(135deg, #00FF87 0%, #059669 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
               fontSize: '0.85rem',
-              color: '#FFF'
+              color: '#05070A'
             }}>
               {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
             </div>

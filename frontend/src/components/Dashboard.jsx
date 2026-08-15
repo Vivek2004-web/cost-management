@@ -117,7 +117,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
   const show = (mod) => activeModule === 'overview' || activeModule === mod;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: '#07090E' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-dark)' }}>
 
       <Sidebar
         collapsed={sidebarCollapsed}
