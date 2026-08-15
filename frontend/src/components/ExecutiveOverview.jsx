@@ -9,11 +9,11 @@ export default function ExecutiveOverview({ summary, onNavigate }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Zap size={22} color="#FF9900" />
-            Executive FinOps & Cloud Operations Summary
+            <Zap size={22} color="#00FF87" />
+            Executive FinOps & Real-Time Cloud Operations
           </h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Real-time executive health assessment across multi-cloud infrastructure
+          <p style={{ fontSize: '0.82rem', color: '#00FF87', fontWeight: 700 }}>
+            ⚡ Live Auto-Synced via GitHub Actions Docker CI/CD Pipeline
           </p>
         </div>
 

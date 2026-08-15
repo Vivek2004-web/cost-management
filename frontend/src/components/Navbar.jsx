@@ -74,6 +74,21 @@ export default function Navbar({
               </>
             )}
           </button>
+
+          <span style={{
+            background: 'rgba(0, 255, 135, 0.18)',
+            border: '1px solid rgba(0, 255, 135, 0.45)',
+            borderRadius: '20px',
+            padding: '6px 14px',
+            color: '#00FF87',
+            fontSize: '0.8rem',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <Zap size={14} /> ⚡ CI/CD AUTO-DEPLOYED
+          </span>
         </div>
 
         {/* Action Controls & User Profile */}
