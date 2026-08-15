@@ -19,16 +19,16 @@ export default function App() {
           let res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234' })
+            body: JSON.stringify({ email: 'viveksalaria3010@gmail.com', password: 'password123' })
           });
           let data = await res.json();
 
           if (!data.success) {
-            // Auto register demo user if not created in DB yet
-            res = await fetch('/api/auth/register', {
+            // Fallback to demo account if default password differs
+            res = await fetch('/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234', fullName: 'Demo Account' })
+              body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234' })
             });
             data = await res.json();
           }
