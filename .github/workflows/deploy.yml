@@ -57,8 +57,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/aws-cloud-cost-monitor || git clone https://github.com/${{ github.repository }}.git /home/ubuntu/aws-cloud-cost-monitor
-            cd /home/ubuntu/aws-cloud-cost-monitor
+            cd /home/ubuntu/cloud-management || git clone https://github.com/${{ github.repository }}.git /home/ubuntu/cloud-management
+            cd /home/ubuntu/cloud-management
             git pull origin main
             chmod +x scripts/deploy-ec2.sh
             ./scripts/deploy-ec2.sh

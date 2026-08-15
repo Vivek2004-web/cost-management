@@ -27,7 +27,7 @@ fi
 
 # 3. Build & launch Docker containers
 echo "🏗️ Building & launching containers via Docker Compose..."
-docker compose up -d --build
+sudo docker-compose up -d --build || sudo docker compose up -d --build
 
 # 4. Verify running services
 echo "✅ Deployment Successful!"
