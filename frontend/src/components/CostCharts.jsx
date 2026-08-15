@@ -123,13 +123,13 @@ export default function CostCharts({ dailyBreakdown, serviceDistribution, dailyS
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Filter size={14} /> Range:
             </span>
-            {['7', '30', '90'].map((p) => (
+            {[{ id: 'MTD', label: 'MTD (This Month)' }, { id: '7', label: '7 Days' }, { id: '30', label: '30 Days' }, { id: '90', label: '90 Days' }].map((item) => (
               <button
-                key={p}
-                onClick={() => onPeriodChange(p)}
+                key={item.id}
+                onClick={() => onPeriodChange(item.id)}
                 style={{
-                  background: period === p ? 'var(--aws-orange)' : 'rgba(255, 255, 255, 0.05)',
-                  color: period === p ? '#0A0D14' : 'var(--text-main)',
+                  background: period === item.id ? 'var(--aws-orange)' : 'rgba(255, 255, 255, 0.05)',
+                  color: period === item.id ? '#0A0D14' : 'var(--text-main)',
                   fontWeight: 700,
                   border: '1px solid var(--border-color)',
                   borderRadius: '8px',
@@ -139,7 +139,7 @@ export default function CostCharts({ dailyBreakdown, serviceDistribution, dailyS
                   transition: 'all 0.2s ease'
                 }}
               >
-                {p} Days
+                {item.label}
               </button>
             ))}
           </div>

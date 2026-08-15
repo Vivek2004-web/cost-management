@@ -12,17 +12,23 @@ export default function KpiCards({ summary, budgets }) {
       marginBottom: '28px'
     }}>
       
-      {/* 📊 Card 1: Month-to-Date Cloud Cost */}
+      {/* 📊 Card 1: Current Month Spending (MTD) */}
       <div className="glass-card-interactive" style={{ padding: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-            Month-to-Date Cost (MTD)
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+          <div>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+              Current Month Spending
+            </span>
+            <div style={{ fontSize: '0.72rem', color: '#FF9900', fontWeight: 600, marginTop: '2px' }}>
+              {summary?.currentMonthName || 'Month-to-Date'} (Days 1–{summary?.currentMonthDaysElapsed || 15} of {summary?.totalDaysInCurrentMonth || 31})
+            </div>
+          </div>
           <div style={{
-            width: '40px',
-            height: '40px',
+            width: '42px',
+            height: '42px',
             borderRadius: '12px',
             background: 'rgba(255, 153, 0, 0.15)',
+            border: '1px solid rgba(255, 153, 0, 0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -33,11 +39,23 @@ export default function KpiCards({ summary, budgets }) {
         </div>
 
         <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '12px' }}>
-          ${summary?.totalMonthlyCost ? summary.totalMonthlyCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
+          ${(summary?.currentMonthCost ?? summary?.totalMonthlyCost ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: '8px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px' }}>
           <span>Last Month: <strong style={{ color: '#FFF' }}>${summary?.lastMonthCost ? summary.lastMonthCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong></span>
+          {summary?.monthTrendPercentage !== undefined && (
+            <span style={{
+              background: summary.monthTrendPercentage >= 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+              color: summary.monthTrendPercentage >= 0 ? '#F87171' : '#34D399',
+              padding: '2px 8px',
+              borderRadius: '6px',
+              fontWeight: 700,
+              fontSize: '0.72rem'
+            }}>
+              {summary.monthTrendPercentage >= 0 ? `+${summary.monthTrendPercentage}%` : `${summary.monthTrendPercentage}%`} MoM
+            </span>
+          )}
         </div>
       </div>
 
@@ -66,7 +84,7 @@ export default function KpiCards({ summary, budgets }) {
         </div>
 
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Run-rate Forecast: <strong style={{ color: 'var(--text-main)' }}>${summary?.forecastMonthEnd ? summary.forecastMonthEnd.toLocaleString() : '0.00'}</strong> by end of month
+          Run-rate Forecast: <strong style={{ color: 'var(--text-main)' }}>${summary?.forecastMonthEnd ? summary.forecastMonthEnd.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong> by end of {summary?.currentMonthName || 'month'}
         </div>
       </div>
 

@@ -81,15 +81,51 @@ function generateDemoCostData(daysCount = 30) {
     }
   ];
 
+  const currentMonthPrefix = now.toISOString().slice(0, 7); // e.g. "2026-08"
+  const currentDayOfMonth = now.getDate();
+  const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+  const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthPrefix = prevMonthDate.toISOString().slice(0, 7);
+
+  const currentMonthEntries = dailyBreakdown.filter(d => d.date.startsWith(currentMonthPrefix));
+  let currentMonthCost = currentMonthEntries.reduce((sum, item) => sum + item.total, 0);
+
+  // If daily breakdown range doesn't cover all days of current month, fill missing earlier days
+  if (currentMonthEntries.length < currentDayOfMonth) {
+    const missingDays = currentDayOfMonth - currentMonthEntries.length;
+    currentMonthCost += missingDays * 104.00;
+  }
+
+  const lastMonthEntries = dailyBreakdown.filter(d => d.date.startsWith(lastMonthPrefix));
+  let lastMonthCost = lastMonthEntries.reduce((sum, item) => sum + item.total, 0);
+  if (lastMonthEntries.length < 30) {
+    lastMonthCost = 2840.00;
+  }
+
+  const currentMonthCostFormatted = parseFloat(currentMonthCost.toFixed(2));
+  const lastMonthCostFormatted = parseFloat(lastMonthCost.toFixed(2));
+  const forecastMonthEnd = parseFloat(((currentMonthCost / currentDayOfMonth) * totalDaysInMonth).toFixed(2));
+  const monthTrendPercentage = lastMonthCostFormatted > 0
+    ? parseFloat((((currentMonthCostFormatted - lastMonthCostFormatted) / lastMonthCostFormatted) * 100).toFixed(1))
+    : 8.5;
+
+  const todaysCost = dailyBreakdown.length > 0 ? dailyBreakdown[dailyBreakdown.length - 1].total : 112.40;
+
   return {
     summary: {
-      totalMonthlyCost: 3120.00,
-      todaysCost: 112.40,
+      currentMonthCost: currentMonthCostFormatted,
+      totalMonthlyCost: currentMonthCostFormatted,
+      lastMonthCost: lastMonthCostFormatted,
+      todaysCost: parseFloat(todaysCost.toFixed(2)),
       highestCostService: 'AWS EC2 Compute',
       highestServiceCost: 890.00,
       currency: 'USD',
-      monthTrendPercentage: 9.8,
-      forecastMonthEnd: 3380.00
+      monthTrendPercentage: monthTrendPercentage,
+      forecastMonthEnd: forecastMonthEnd,
+      currentMonthName: now.toLocaleDateString('en-US', { month: 'long' }),
+      currentMonthDaysElapsed: currentDayOfMonth,
+      totalDaysInCurrentMonth: totalDaysInMonth
     },
     cloudProviders,
     serviceDistribution,
@@ -104,7 +140,7 @@ function generateDemoCostData(daysCount = 30) {
 router.get('/overview', authenticateToken, async (req, res) => {
   try {
     const period = req.query.period || '30';
-    const daysCount = parseInt(period, 10);
+    const daysCount = period === 'MTD' ? new Date().getDate() : parseInt(period, 10);
     const userId = req.user.id;
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
@@ -264,8 +300,15 @@ router.get('/overview', authenticateToken, async (req, res) => {
             };
           }).sort((a, b) => b.amount - a.amount);
 
+          const currentDayOfMonth = new Date().getDate();
+          const totalDaysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+          const forecastMonthEnd = mtdFormatted > 0
+            ? parseFloat(((mtdFormatted / currentDayOfMonth) * totalDaysInMonth).toFixed(2))
+            : parseFloat((grandTotalFormatted * 1.1).toFixed(2));
+
           const resultPayload = {
             summary: {
+              currentMonthCost: mtdFormatted > 0 ? mtdFormatted : grandTotalFormatted,
               totalMonthlyCost: activeMonthlySpend,
               lastMonthCost: lastMonthFormatted,
               todaysCost: parseFloat(todaysCost.toFixed(2)),
@@ -273,7 +316,10 @@ router.get('/overview', authenticateToken, async (req, res) => {
               highestServiceCost: highestService.amount,
               currency: 'USD',
               monthTrendPercentage: lastMonthFormatted > 0 ? parseFloat((((activeMonthlySpend - lastMonthFormatted) / lastMonthFormatted) * 100).toFixed(1)) : 0.0,
-              forecastMonthEnd: parseFloat((activeMonthlySpend * 2.2).toFixed(2))
+              forecastMonthEnd: forecastMonthEnd,
+              currentMonthName: new Date().toLocaleDateString('en-US', { month: 'long' }),
+              currentMonthDaysElapsed: currentDayOfMonth,
+              totalDaysInCurrentMonth: totalDaysInMonth
             },
             cloudProviders: [
               { name: 'Amazon Web Services (AWS)', short: 'AWS', cost: totalMonthlyCost, percentage: 100, color: '#FF9900' }

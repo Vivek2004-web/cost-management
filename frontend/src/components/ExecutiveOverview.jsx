@@ -37,14 +37,25 @@ export default function ExecutiveOverview({ summary, onNavigate }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
         
-        {/* Metric 1: Month End Spend */}
+        {/* Metric 1: Current Month Spend (MTD) */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid rgba(255, 153, 0, 0.3)', borderRadius: '14px', padding: '18px' }}>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Current Month Spend (MTD)</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FF9900' }}>
+            ${(summary?.currentMonthCost ?? summary?.totalMonthlyCost ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', fontWeight: 600 }}>
+            {summary?.currentMonthName || 'August'} (Days 1–{summary?.currentMonthDaysElapsed || 15})
+          </div>
+        </div>
+
+        {/* Metric 2: Month End Forecast */}
         <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
-          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Estimated Month End Spend</div>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Projected Month-End Spend</div>
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFF' }}>
             ${summary?.forecastMonthEnd ? summary.forecastMonthEnd.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '3,380.00'}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#F87171', marginTop: '4px', fontWeight: 700 }}>
-            +8.4% forecast growth
+            +{summary?.monthTrendPercentage || 8.4}% vs previous month
           </div>
         </div>
 
