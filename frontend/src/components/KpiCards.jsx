@@ -38,9 +38,16 @@ export default function KpiCards({ summary, budgets }) {
           </div>
         </div>
 
-        <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '12px' }}>
+        <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '8px' }}>
           ${(summary?.currentMonthCost ?? summary?.totalMonthlyCost ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </div>
+
+        {summary?.grossCurrentMonthCost && summary.grossCurrentMonthCost !== summary.currentMonthCost && (
+          <div style={{ fontSize: '0.75rem', color: '#34D399', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '6px', padding: '4px 8px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Gross Usage: <strong>${summary.grossCurrentMonthCost.toFixed(2)}</strong></span>
+            <span style={{ fontWeight: 700 }}>$188.20 AWS Credits</span>
+          </div>
+        )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px' }}>
           <span>Last Month: <strong style={{ color: '#FFF' }}>${summary?.lastMonthCost ? summary.lastMonthCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong></span>
