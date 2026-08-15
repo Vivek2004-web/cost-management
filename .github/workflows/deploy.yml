@@ -59,6 +59,8 @@ jobs:
           script: |
             cd /home/ubuntu/cloud-management || git clone https://github.com/${{ github.repository }}.git /home/ubuntu/cloud-management
             cd /home/ubuntu/cloud-management
+            git checkout main
+            git reset --hard origin/main
             git pull origin main
             chmod +x scripts/deploy-ec2.sh
             ./scripts/deploy-ec2.sh
