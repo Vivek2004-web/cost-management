@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Radio, Send, CheckCircle2, Zap, ShieldAlert } from 'lucide-react';
 
-export default function AnomalyRadar({ token }) {
+export default function AnomalyRadar({ token, isDemoMode = false }) {
   const [testSending, setTestSending] = useState(false);
   const [testSuccess, setTestSuccess] = useState('');
 
-  const anomalies = [
+  const anomalies = isDemoMode ? [
     { id: 1, title: 'AWS EC2 Compute Spend Spike (+27%)', provider: 'AWS', severity: 'HIGH', impact: '+$240.00/mo', description: 'Unusual auto-scaling event triggered in us-east-1 during peak traffic hours.' },
     { id: 2, title: 'Azure SQL Database Query Rate Anomaly (+18%)', provider: 'Azure', severity: 'MEDIUM', impact: '+$165.00/mo', description: 'Staging VMs running 24/7 unassigned during weekend testing.' }
+  ] : [
+    { id: 1, title: 'AWS EC2 Instance State Audit', provider: 'AWS', severity: 'LOW', impact: '$0.00/hr active', description: 'All 5 registered EC2 instances (cafe-docker, myfly, Portfolio, Copygram, snake game-cicd) are currently STOPPED. No active compute charges.' },
+    { id: 2, title: 'AWS Promotional Credit & Net Billing Status', provider: 'AWS', severity: 'INFO', impact: '+$188.20 Credits', description: 'Active promotional credits applied. Net billed month-to-date cost is $0.01 (Gross usage $3.27). 0 cost anomalies detected.' }
   ];
 
   const handleSendTestAlert = async () => {

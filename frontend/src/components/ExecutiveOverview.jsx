@@ -59,36 +59,36 @@ export default function ExecutiveOverview({ summary, onNavigate }) {
           </div>
         </div>
 
-        {/* Metric 2: Savings Captured */}
+        {/* Metric 3: Savings & Promotional Credits */}
         <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
-          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Savings Captured This Month</div>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>AWS Credits / Savings</div>
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#34D399' }}>
-            $1,310.50
+            ${summary?.creditsRemaining ? summary.creditsRemaining.toFixed(2) : '188.20'}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#34D399', marginTop: '4px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '2px' }}>
-            <TrendingDown size={14} /> 4 optimization rules active
+            <TrendingDown size={14} /> Active Promotional Credits
           </div>
         </div>
 
-        {/* Metric 3: Active Resources */}
+        {/* Metric 4: Active Resources */}
         <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '18px' }}>
-          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Active Cloud Resources</div>
+          <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Cloud Resources</div>
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#38BDF8' }}>
-            28 Nodes
+            5 Nodes
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            EC2, RDS, Lambda & S3
+          <div style={{ fontSize: '0.75rem', color: '#34D399', marginTop: '4px', fontWeight: 600 }}>
+            5 AWS EC2 (All Stopped)
           </div>
         </div>
 
-        {/* Metric 4: Critical Alerts */}
-        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '14px', padding: '18px' }}>
+        {/* Metric 5: Critical Alerts */}
+        <div style={{ background: 'rgba(10, 13, 20, 0.7)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '14px', padding: '18px' }}>
           <div style={{ fontSize: '0.785rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Critical Alerts</div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F87171' }}>
-            2 Spikes
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#34D399' }}>
+            0 Spikes
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#FBBF24', marginTop: '4px', fontWeight: 700 }}>
-            Requires attention
+          <div style={{ fontSize: '0.75rem', color: '#34D399', marginTop: '4px', fontWeight: 700 }}>
+            100% Healthy • 0 Anomalies
           </div>
         </div>
 

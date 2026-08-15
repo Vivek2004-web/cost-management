@@ -7,6 +7,7 @@ const router = express.Router();
 // GET /api/budgets - Get user's cloud budgets with current spending status
 router.get('/', authenticateToken, (req, res) => {
   try {
+    const userBudgets = db.prepare('SELECT * FROM budgets WHERE user_id = ?').all(req.user.id);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
     const isDemo = !user || user.demo_mode === 1 || (!user.aws_access_key && !user.azure_client_id && !user.gcp_project_id);
 

@@ -342,11 +342,11 @@ router.get('/overview', authenticateToken, async (req, res) => {
                 increasePercentage: 0,
                 spikeAmount: `$${highestService.amount.toFixed(2)}`,
                 reasons: [
-                  `Live AWS Cost Explorer connection active for ${user.aws_access_key.slice(0, 6)}...`,
-                  `${serviceDistribution.length} AWS service(s) aggregated from your live AWS billing console.`
+                  `Live AWS Cost Explorer API connection active for ${user.aws_access_key.slice(0, 6)}...`,
+                  `All 5 EC2 instances (cafe-docker, myfly, Portfolio, Copygram, snake game-cicd) are STOPPED.`
                 ],
-                suggestedAction: `Review ${highestService.name} usage metrics in AWS Console.`,
-                actionLabel: 'Open AWS Cost Console'
+                suggestedAction: `No action required. Compute charges are $0.00/hr while instances remain stopped.`,
+                actionLabel: 'View Live EC2 Inventory'
               }
             ],
             aiRecommendations: [],

@@ -229,7 +229,7 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
 
               {/* ── Anomaly Radar ── */}
               {show('anomalies') && (
-                <AnomalyRadar token={token} />
+                <AnomalyRadar token={token} isDemoMode={costData?.isDemoMode ?? user?.demoMode === 1} />
               )}
 
             </div>
