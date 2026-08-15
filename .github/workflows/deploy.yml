@@ -45,6 +45,7 @@ jobs:
     needs: test-and-build
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    environment: cicd-cloacal
 
     steps:
       - name: Checkout Repository
