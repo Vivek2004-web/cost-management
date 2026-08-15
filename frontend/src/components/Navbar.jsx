@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cloud, Sliders, LogOut, Mail, RefreshCw, Sparkles, ShieldCheck, Search, Play, Power } from 'lucide-react';
+import { Cloud, Sliders, LogOut, Mail, RefreshCw, Sparkles, ShieldCheck, Search, Play, Power, Zap } from 'lucide-react';
 
 export default function Navbar({
   user,
