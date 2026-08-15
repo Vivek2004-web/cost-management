@@ -11,20 +11,53 @@ export default function App() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!token) {
+      let activeToken = token;
+
+      // If no token exists in localStorage, auto-login so dashboard opens directly
+      if (!activeToken) {
+        try {
+          let res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234' })
+          });
+          let data = await res.json();
+
+          if (!data.success) {
+            // Auto register demo user if not created in DB yet
+            res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234', fullName: 'Demo Account' })
+            });
+            data = await res.json();
+          }
+
+          if (data.success) {
+            localStorage.setItem('cloud_monitor_token', data.token);
+            setToken(data.token);
+            setUser(data.user);
+            setLoading(false);
+            return;
+          }
+        } catch (err) {
+          console.error('Auto-login error:', err);
+        }
+      }
+
+      if (!activeToken) {
         setLoading(false);
         return;
       }
 
       try {
         const res = await fetch('/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${activeToken}` }
         });
         const data = await res.json();
         if (data.success) {
           setUser(data.user);
         } else {
-          // Token invalid or expired
           localStorage.removeItem('cloud_monitor_token');
           setToken('');
         }
