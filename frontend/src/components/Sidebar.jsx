@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  Zap, Bot, Target, AlertTriangle, PieChart, Layers, Settings, ChevronLeft, ChevronRight, Cloud
+  Zap, Bot, Target, AlertTriangle, PieChart, Layers, Settings, ChevronLeft, ChevronRight, Cloud, Scale
 } from 'lucide-react';
 
 export default function Sidebar({ collapsed, onToggleCollapse, activeModule, onSelectModule }) {
   const navigationItems = [
     { id: 'overview',   label: 'Overview',          icon: Zap,           badge: null },
+    { id: 'multicloud', label: 'Multi-Cloud Compare',icon: Scale,         badge: 'AWS vs AZURE vs GCP' },
     { id: 'charts',     label: 'Cost Charts',        icon: PieChart,      badge: null },
     { id: 'budgets',    label: 'Budget Tracker',     icon: Target,        badge: null },
     { id: 'advisor',    label: 'AI Advisor',         icon: Bot,           badge: 'SAVE $1.3K' },

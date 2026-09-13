@@ -192,8 +192,8 @@ export default function Dashboard({ user, token, onLogout, onUpdateUser }) {
                 budgets={budgets}
               />
 
-              {/* ── Multi-Cloud Provider Breakdown (overview & charts) ── */}
-              {(show('charts') || show('overview')) && costData?.cloudProviders?.length > 1 && (
+              {/* ── Multi-Cloud Provider Breakdown (overview & multicloud compare) ── */}
+              {(show('multicloud') || show('overview')) && (
                 <MultiCloudBreakdown cloudProviders={costData?.cloudProviders} />
               )}
 
