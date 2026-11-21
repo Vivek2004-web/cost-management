@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { formatINR } from '../utils/currency';
+import ProviderLogo from './CloudLogos';
 import {
   AreaChart, Area, LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -45,22 +47,28 @@ export default function CostCharts({ dailyBreakdown, serviceDistribution, dailyS
           fontSize: '0.85rem'
         }}>
           <p style={{ fontWeight: 700, marginBottom: '6px', color: '#FFF' }}>{label}</p>
-          <p style={{ color: '#FF9900', fontWeight: 800, fontSize: '1rem', marginBottom: '8px' }}>
-            Total Spend: ${payload[0]?.value ? payload[0].value.toFixed(2) : '0.00'}
+          <p style={{ color: '#00FF87', fontWeight: 800, fontSize: '1rem', marginBottom: '8px' }}>
+            Total Spend: {formatINR(payload[0]?.value || 0)}
           </p>
           {payload[0]?.payload && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px solid var(--border-color)', paddingTop: '6px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', fontSize: '0.75rem', color: '#FF9900' }}>
-                <span>AWS:</span>
-                <strong>${payload[0].payload.aws ? payload[0].payload.aws.toFixed(2) : '0.00'}</strong>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-color)', paddingTop: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', fontSize: '0.78rem', color: '#FF9900' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ProviderLogo provider="AWS" size={14} /> AWS:
+                </span>
+                <strong>{formatINR(payload[0].payload.aws || 0)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', fontSize: '0.75rem', color: '#38BDF8' }}>
-                <span>Azure:</span>
-                <strong>${payload[0].payload.azure ? payload[0].payload.azure.toFixed(2) : '0.00'}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', fontSize: '0.78rem', color: '#38BDF8' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ProviderLogo provider="Azure" size={14} /> Azure:
+                </span>
+                <strong>{formatINR(payload[0].payload.azure || 0)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', fontSize: '0.75rem', color: '#60A5FA' }}>
-                <span>GCP:</span>
-                <strong>${payload[0].payload.gcp ? payload[0].payload.gcp.toFixed(2) : '0.00'}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', fontSize: '0.78rem', color: '#60A5FA' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ProviderLogo provider="GCP" size={14} /> GCP:
+                </span>
+                <strong>{formatINR(payload[0].payload.gcp || 0)}</strong>
               </div>
             </div>
           )}

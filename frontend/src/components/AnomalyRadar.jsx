@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
+import ProviderLogo from './CloudLogos';
 import { AlertTriangle, Radio, Send, CheckCircle2, Zap, ShieldAlert } from 'lucide-react';
 
 export default function AnomalyRadar({ token, isDemoMode = false }) {
@@ -7,11 +8,11 @@ export default function AnomalyRadar({ token, isDemoMode = false }) {
   const [testSuccess, setTestSuccess] = useState('');
 
   const anomalies = isDemoMode ? [
-    { id: 1, title: 'AWS EC2 Compute Spend Spike (+27%)', provider: 'AWS', severity: 'HIGH', impact: '+$240.00/mo', description: 'Unusual auto-scaling event triggered in us-east-1 during peak traffic hours.' },
-    { id: 2, title: 'Azure SQL Database Query Rate Anomaly (+18%)', provider: 'Azure', severity: 'MEDIUM', impact: '+$165.00/mo', description: 'Staging VMs running 24/7 unassigned during weekend testing.' }
+    { id: 1, title: 'AWS EC2 Compute Spend Spike (+27%)', provider: 'AWS', severity: 'HIGH', impact: `+${formatINR(240)}/mo`, description: 'Unusual auto-scaling event triggered in us-east-1 during peak traffic hours.' },
+    { id: 2, title: 'Azure SQL Database Query Rate Anomaly (+18%)', provider: 'Azure', severity: 'MEDIUM', impact: `+${formatINR(165)}/mo`, description: 'Staging VMs running 24/7 unassigned during weekend testing.' }
   ] : [
-    { id: 1, title: 'AWS EC2 Instance State Audit', provider: 'AWS', severity: 'LOW', impact: '$0.00/hr active', description: 'All 5 registered EC2 instances (cafe-docker, myfly, Portfolio, Copygram, snake game-cicd) are currently STOPPED. No active compute charges.' },
-    { id: 2, title: 'AWS Promotional Credit & Net Billing Status', provider: 'AWS', severity: 'INFO', impact: '+$188.20 Credits', description: 'Active promotional credits applied. Net billed month-to-date cost is $0.01 (Gross usage $3.27). 0 cost anomalies detected.' }
+    { id: 1, title: 'AWS EC2 Instance State Audit', provider: 'AWS', severity: 'LOW', impact: '₹0.00/hr active', description: 'All 5 registered EC2 instances (cafe-docker, myfly, Portfolio, Copygram, snake game-cicd) are currently STOPPED. No active compute charges.' },
+    { id: 2, title: 'AWS Promotional Credit & Net Billing Status', provider: 'AWS', severity: 'INFO', impact: '+₹15,809 Credits', description: 'Active promotional credits applied. Net billed month-to-date cost is ₹0.84 (Gross usage ₹275). 0 cost anomalies detected.' }
   ];
 
   const handleSendTestAlert = async () => {
@@ -74,8 +75,9 @@ export default function AnomalyRadar({ token, isDemoMode = false }) {
         {anomalies.map((a) => (
           <div key={a.id} className="glass-card-interactive" style={{ padding: '18px', borderLeft: '4px solid #F87171' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span className={`badge badge-${a.provider.toLowerCase()}`}>
-                {a.provider} • ANOMALY
+              <span className={`badge badge-${a.provider.toLowerCase()}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <ProviderLogo provider={a.provider} size={14} />
+                <span>{a.provider} • ANOMALY</span>
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#F87171' }}>
                 {a.impact}

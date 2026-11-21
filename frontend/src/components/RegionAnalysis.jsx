@@ -42,7 +42,7 @@ export default function RegionAnalysis() {
             </div>
 
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFF', marginBottom: '8px' }}>
-              ${r.spend.toFixed(2)}
+              {formatINR(r.spend)}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>

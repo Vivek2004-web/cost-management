@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
+import ProviderLogo from './CloudLogos';
 import {
   Layers, Scale, Zap, TrendingUp, Sparkles, Server, Database, HardDrive,
   BarChart3, Globe, CheckCircle2, ArrowRight, DollarSign, Sliders, Shield, AlertCircle
@@ -200,19 +201,17 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{
-                        width: '42px',
-                        height: '42px',
+                        width: '46px',
+                        height: '46px',
                         borderRadius: '12px',
-                        background: `${p.color}20`,
+                        background: `${p.color}15`,
                         border: `1px solid ${p.color}40`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: p.color,
-                        fontWeight: 900,
-                        fontSize: '0.95rem'
+                        flexShrink: 0
                       }}>
-                        {p.short}
+                        <ProviderLogo provider={p.short} size={28} />
                       </div>
                       <div>
                         <h4 style={{ fontSize: '1.05rem', fontWeight: 800 }}>{p.name}</h4>
@@ -238,10 +237,10 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
                   {/* Monthly Cost & Run Rate */}
                   <div style={{ marginBottom: '16px' }}>
                     <div style={{ fontSize: '2.1rem', fontWeight: 900, color: '#FFF', letterSpacing: '-0.02em' }}>
-                      ${p.cost ? p.cost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
+                      {formatINR(p.cost)}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      <span>Run-rate: <strong>${dailyRate}/day</strong></span>
+                      <span>Run-rate: <strong>{formatINR(p.cost / 30)}/day</strong></span>
                       <span>•</span>
                       <span>Efficiency: <strong style={{ color: '#34D399' }}>{p.efficiencyScore || '90%'}</strong></span>
                     </div>
@@ -251,7 +250,7 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
                   <div style={{ marginBottom: '14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
                       <span>Budget Allocation</span>
-                      <span>{p.percentage}% of ${totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                      <span>{p.percentage}% of {formatINR(totalSpend)}</span>
                     </div>
                     <div style={{ height: '8px', width: '100%', background: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px', overflow: 'hidden' }}>
                       <div style={{
@@ -294,7 +293,7 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FFF' }}>Unified Multi-Cloud Distribution Ratio</span>
               </div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Total Monthly Portfolio: <strong style={{ color: '#00FF87' }}>${totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+                Total Monthly Portfolio: <strong style={{ color: '#00FF87' }}>{formatINR(totalSpend)}</strong>
               </span>
             </div>
 
@@ -315,9 +314,9 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
             <div style={{ display: 'flex', gap: '20px', marginTop: '12px', flexWrap: 'wrap' }}>
               {providers.map((p) => (
                 <div key={p.short} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: p.color }} />
+                  <ProviderLogo provider={p.short} size={16} />
                   <span style={{ color: 'var(--text-muted)' }}>{p.short}:</span>
-                  <strong style={{ color: '#FFF' }}>${p.cost.toLocaleString('en-US', { minimumFractionDigits: 2 })} ({p.percentage}%)</strong>
+                  <strong style={{ color: '#FFF' }}>{formatINR(p.cost)} ({p.percentage}%)</strong>
                 </div>
               ))}
             </div>
@@ -342,9 +341,24 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
                 <th style={{ padding: '12px 14px', color: 'var(--text-muted)', fontWeight: 700 }}>Cloud Service Category</th>
-                <th style={{ padding: '12px 14px', color: '#FF9900', fontWeight: 800 }}>🟧 Amazon AWS</th>
-                <th style={{ padding: '12px 14px', color: '#38BDF8', fontWeight: 800 }}>🟦 Microsoft Azure</th>
-                <th style={{ padding: '12px 14px', color: '#60A5FA', fontWeight: 800 }}>🟨 Google GCP</th>
+                <th style={{ padding: '12px 14px', color: '#FF9900', fontWeight: 800 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ProviderLogo provider="AWS" size={18} />
+                    <span>Amazon AWS</span>
+                  </div>
+                </th>
+                <th style={{ padding: '12px 14px', color: '#38BDF8', fontWeight: 800 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ProviderLogo provider="Azure" size={18} />
+                    <span>Microsoft Azure</span>
+                  </div>
+                </th>
+                <th style={{ padding: '12px 14px', color: '#60A5FA', fontWeight: 800 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ProviderLogo provider="GCP" size={18} />
+                    <span>Google GCP</span>
+                  </div>
+                </th>
                 <th style={{ padding: '12px 14px', color: '#00FF87', fontWeight: 800 }}>Best Value</th>
               </tr>
             </thead>
@@ -360,21 +374,30 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
 
                     {/* AWS */}
                     <td style={{ padding: '14px' }}>
-                      <div style={{ fontWeight: 800, color: '#FFF' }}>${row.aws.cost.toFixed(2)}</div>
+                      <div style={{ fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <ProviderLogo provider="AWS" size={14} />
+                        {formatINR(row.aws.cost)}
+                      </div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{row.aws.service}</div>
                       <div style={{ fontSize: '0.68rem', color: '#FF9900', marginTop: '2px' }}>{row.aws.unitCost}</div>
                     </td>
 
                     {/* Azure */}
                     <td style={{ padding: '14px' }}>
-                      <div style={{ fontWeight: 800, color: '#FFF' }}>${row.azure.cost.toFixed(2)}</div>
+                      <div style={{ fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <ProviderLogo provider="Azure" size={14} />
+                        {formatINR(row.azure.cost)}
+                      </div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{row.azure.service}</div>
                       <div style={{ fontSize: '0.68rem', color: '#38BDF8', marginTop: '2px' }}>{row.azure.unitCost}</div>
                     </td>
 
                     {/* GCP */}
                     <td style={{ padding: '14px' }}>
-                      <div style={{ fontWeight: 800, color: '#FFF' }}>${row.gcp.cost.toFixed(2)}</div>
+                      <div style={{ fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <ProviderLogo provider="GCP" size={14} />
+                        {formatINR(row.gcp.cost)}
+                      </div>
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{row.gcp.service}</div>
                       <div style={{ fontSize: '0.68rem', color: '#60A5FA', marginTop: '2px' }}>{row.gcp.unitCost}</div>
                     </td>
@@ -492,14 +515,17 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
               position: 'relative'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FF9900' }}>🟧 AWS Estimate</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ProviderLogo provider="AWS" size={20} />
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FF9900' }}>AWS Estimate</span>
+                </div>
                 {cheapestProvider === 'AWS' && <span style={{ fontSize: '0.68rem', padding: '2px 8px', background: '#FF9900', color: '#000', fontWeight: 900, borderRadius: '4px' }}>LOWEST COST</span>}
               </div>
               <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFF' }}>
-                ${simulatedAwsCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
+                {formatINR(simulatedAwsCost)}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                Compute: ${(vmCount * 35.6).toFixed(0)} | DB: ${(dbCount * 72).toFixed(0)} | Storage: ${(storageTb * 23).toFixed(0)}
+                Compute: {formatINR(vmCount * 35.6)} | DB: {formatINR(dbCount * 72)} | Storage: {formatINR(storageTb * 23)}
               </div>
             </div>
 
@@ -512,14 +538,17 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
               position: 'relative'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38BDF8' }}>🟦 Azure Estimate</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ProviderLogo provider="Azure" size={20} />
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#38BDF8' }}>Azure Estimate</span>
+                </div>
                 {cheapestProvider === 'Azure' && <span style={{ fontSize: '0.68rem', padding: '2px 8px', background: '#38BDF8', color: '#000', fontWeight: 900, borderRadius: '4px' }}>LOWEST COST</span>}
               </div>
               <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFF' }}>
-                ${simulatedAzureCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
+                {formatINR(simulatedAzureCost)}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                Compute: ${(vmCount * 36.8).toFixed(0)} | DB: ${(dbCount * 65.5).toFixed(0)} | Storage: ${(storageTb * 21).toFixed(0)}
+                Compute: {formatINR(vmCount * 36.8)} | DB: {formatINR(dbCount * 65.5)} | Storage: {formatINR(storageTb * 21)}
               </div>
             </div>
 
@@ -532,14 +561,17 @@ export default function MultiCloudBreakdown({ cloudProviders }) {
               position: 'relative'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#60A5FA' }}>🟨 GCP Estimate</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ProviderLogo provider="GCP" size={20} />
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#60A5FA' }}>GCP Estimate</span>
+                </div>
                 {cheapestProvider === 'GCP' && <span style={{ fontSize: '0.68rem', padding: '2px 8px', background: '#60A5FA', color: '#000', fontWeight: 900, borderRadius: '4px' }}>LOWEST COST</span>}
               </div>
               <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#FFF' }}>
-                ${simulatedGcpCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
+                {formatINR(simulatedGcpCost)}<span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/mo</span>
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                Compute: ${(vmCount * 32.4).toFixed(0)} | DB: ${(dbCount * 68).toFixed(0)} | Storage: ${(storageTb * 20).toFixed(0)}
+                Compute: {formatINR(vmCount * 32.4)} | DB: {formatINR(dbCount * 68)} | Storage: {formatINR(storageTb * 20)}
               </div>
             </div>
           </div>

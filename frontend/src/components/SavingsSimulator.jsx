@@ -107,7 +107,7 @@ export default function SavingsSimulator({ monthlySpend = 3120 }) {
           <div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>Projected Monthly Savings</div>
             <div style={{ fontSize: '2.4rem', fontWeight: 800, color: '#34D399', lineHeight: 1 }}>
-              ${totalMonthlySavings.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatINR(totalMonthlySavings)}
               <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 500 }}> / month</span>
             </div>
 
@@ -115,14 +115,14 @@ export default function SavingsSimulator({ monthlySpend = 3120 }) {
               <div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Annual Cost Cut</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFF' }}>
-                  ${totalAnnualSavings.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  {formatINR(totalAnnualSavings)}
                 </div>
               </div>
 
               <div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>New Monthly Spend</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FF9900' }}>
-                  ${newMonthlySpend.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  {formatINR(newMonthlySpend)}
                 </div>
               </div>
             </div>

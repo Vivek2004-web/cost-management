@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ProviderLogo from './CloudLogos';
 import { Bot, TrendingUp, HelpCircle, ArrowRight, CheckCircle2, Zap, AlertTriangle } from 'lucide-react';
 
 export default function AiCostAdvisor({ aiCostAdvisor }) {
@@ -43,8 +44,9 @@ export default function AiCostAdvisor({ aiCostAdvisor }) {
               <div>
                 {/* Header Badge & Provider */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span className={`badge badge-${item.provider.toLowerCase()}`}>
-                    {item.provider} • {item.serviceName}
+                  <span className={`badge badge-${item.provider.toLowerCase()}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <ProviderLogo provider={item.provider} size={14} />
+                    <span>{item.provider} • {item.serviceName}</span>
                   </span>
                   <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#F87171', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <TrendingUp size={14} /> +{item.increasePercentage}% Increase

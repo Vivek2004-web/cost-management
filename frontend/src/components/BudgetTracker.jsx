@@ -71,10 +71,10 @@ export default function BudgetTracker({ budgets, onAddBudget, onDeleteBudget }) 
 
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '12px' }}>
                     <span style={{ fontSize: '1.6rem', fontWeight: 800 }}>
-                      ${b.currentSpending?.toLocaleString()}
+                      {formatINR(b.currentSpending)}
                     </span>
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      / ${b.monthlyLimit?.toLocaleString()} monthly cap
+                      / {formatINR(b.monthlyLimit)} monthly cap
                     </span>
                   </div>
 
@@ -142,7 +142,7 @@ export default function BudgetTracker({ budgets, onAddBudget, onDeleteBudget }) 
 
               <div>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
-                  Monthly Spending Limit ($ USD)
+                  Monthly Spending Limit (₹ INR)
                 </label>
                 <input
                   type="number"

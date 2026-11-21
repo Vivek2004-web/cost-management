@@ -35,7 +35,7 @@ export default function TeamCostCenter() {
               {t.name}
             </div>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: t.color, marginBottom: '6px' }}>
-              ${t.spend.toFixed(2)}
+              {formatINR(t.spend)}
             </div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
               <span>{t.members} Team Members</span>
