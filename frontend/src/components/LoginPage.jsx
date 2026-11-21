@@ -9,6 +9,15 @@ export default function LoginPage({ onLoginSuccess }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Safe JSON parser — avoids "string did not match" error when server returns HTML on proxy failure
+  const safeJson = async (res) => {
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Cannot connect to the backend server. Please make sure the backend is running on port 5002.');
+    }
+    return res.json();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -24,12 +33,11 @@ export default function LoginPage({ onLoginSuccess }) {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!data.success) {
         throw new Error(data.message || 'Authentication failed');
       }
 
-      // Save token and invoke login callback
       localStorage.setItem('cloud_monitor_token', data.token);
       onLoginSuccess(data.user, data.token);
     } catch (err) {
@@ -42,8 +50,7 @@ export default function LoginPage({ onLoginSuccess }) {
   const handleDemoQuickLogin = async () => {
     setEmail('demo@aws-monitor.com');
     setPassword('demo1234');
-    
-    // Auto register/login demo user
+
     setLoading(true);
     setError('');
     try {
@@ -52,7 +59,7 @@ export default function LoginPage({ onLoginSuccess }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234' })
       });
-      let data = await res.json();
+      let data = await safeJson(res);
 
       if (!data.success) {
         // Register demo user if not created yet
@@ -61,7 +68,7 @@ export default function LoginPage({ onLoginSuccess }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234', fullName: 'Demo Architect' })
         });
-        data = await res.json();
+        data = await safeJson(res);
       }
 
       if (data.success) {
@@ -71,7 +78,7 @@ export default function LoginPage({ onLoginSuccess }) {
         throw new Error(data.message);
       }
     } catch (err) {
-      setError('Demo login failed: ' + err.message);
+      setError(err.message);
     } finally {
       setLoading(false);
     }

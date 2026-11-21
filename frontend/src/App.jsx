@@ -13,6 +13,13 @@ export default function App() {
     const checkAuth = async () => {
       let activeToken = token;
 
+      // Safe JSON parser — avoids crash when backend is not yet running
+      const safeJson = async (res) => {
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) return { success: false };
+        try { return await res.json(); } catch { return { success: false }; }
+      };
+
       // If no token exists in localStorage, auto-login so dashboard opens directly
       if (!activeToken) {
         try {
@@ -21,7 +28,7 @@ export default function App() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: 'viveksalaria3010@gmail.com', password: 'password123' })
           });
-          let data = await res.json();
+          let data = await safeJson(res);
 
           if (!data.success) {
             // Fallback to demo account if default password differs
@@ -30,7 +37,7 @@ export default function App() {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ email: 'demo@aws-monitor.com', password: 'demo1234' })
             });
-            data = await res.json();
+            data = await safeJson(res);
           }
 
           if (data.success) {
@@ -54,6 +61,13 @@ export default function App() {
         const res = await fetch('/api/auth/me', {
           headers: { Authorization: `Bearer ${activeToken}` }
         });
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          localStorage.removeItem('cloud_monitor_token');
+          setToken('');
+          setLoading(false);
+          return;
+        }
         const data = await res.json();
         if (data.success) {
           setUser(data.user);
