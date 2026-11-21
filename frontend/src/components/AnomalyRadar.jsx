@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { AlertTriangle, Radio, Send, CheckCircle2, Zap, ShieldAlert } from 'lucide-react';
 
 export default function AnomalyRadar({ token, isDemoMode = false }) {

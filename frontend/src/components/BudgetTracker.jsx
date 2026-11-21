@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { Target, Plus, Edit2, AlertCircle, ShieldAlert, CheckCircle, Trash2 } from 'lucide-react';
 
 export default function BudgetTracker({ budgets, onAddBudget, onDeleteBudget }) {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { DollarSign, Calendar, Server, Target, TrendingUp } from 'lucide-react';
+import { formatINR } from '../utils/currency';
 
 export default function KpiCards({ summary, budgets }) {
   const mainBudget = budgets && budgets.length > 0 ? budgets[0] : null;
@@ -39,18 +40,18 @@ export default function KpiCards({ summary, budgets }) {
         </div>
 
         <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '8px' }}>
-          ${(summary?.currentMonthCost ?? summary?.totalMonthlyCost ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          {formatINR(summary?.currentMonthCost ?? summary?.totalMonthlyCost ?? 0)}
         </div>
 
         {summary?.grossCurrentMonthCost && summary.grossCurrentMonthCost !== summary.currentMonthCost && (
           <div style={{ fontSize: '0.75rem', color: '#34D399', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '6px', padding: '4px 8px', marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>Gross Usage: <strong>${summary.grossCurrentMonthCost.toFixed(2)}</strong></span>
-            <span style={{ fontWeight: 700 }}>$188.20 AWS Credits</span>
+            <span>Gross Usage: <strong>{formatINR(summary.grossCurrentMonthCost)}</strong></span>
+            <span style={{ fontWeight: 700 }}>₹15,809 AWS Credits</span>
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px' }}>
-          <span>Last Month: <strong style={{ color: '#FFF' }}>${summary?.lastMonthCost ? summary.lastMonthCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong></span>
+          <span>Last Month: <strong style={{ color: '#FFF' }}>{formatINR(summary?.lastMonthCost ?? 0)}</strong></span>
           {summary?.monthTrendPercentage !== undefined && (
             <span style={{
               background: summary.monthTrendPercentage >= 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
@@ -87,11 +88,11 @@ export default function KpiCards({ summary, budgets }) {
         </div>
 
         <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '12px' }}>
-          ${summary?.todaysCost ? summary.todaysCost.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}
+          {formatINR(summary?.todaysCost ?? 0)}
         </div>
 
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Run-rate Forecast: <strong style={{ color: 'var(--text-main)' }}>${summary?.forecastMonthEnd ? summary.forecastMonthEnd.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '0.00'}</strong> by end of {summary?.currentMonthName || 'month'}
+          Run-rate Forecast: <strong style={{ color: 'var(--text-main)' }}>{formatINR(summary?.forecastMonthEnd ?? 0)}</strong> by end of {summary?.currentMonthName || 'month'}
         </div>
       </div>
 
@@ -120,7 +121,7 @@ export default function KpiCards({ summary, budgets }) {
         </div>
 
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Consumes <strong style={{ color: '#FF9900' }}>${summary?.highestServiceCost ? summary.highestServiceCost.toLocaleString() : '0.00'}</strong> of monthly budget
+          Consumes <strong style={{ color: '#FF9900' }}>{formatINR(summary?.highestServiceCost ?? 0)}</strong> of monthly budget
         </div>
       </div>
 
@@ -151,7 +152,7 @@ export default function KpiCards({ summary, budgets }) {
                 {mainBudget.usagePercentage}%
               </span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                of ${mainBudget.monthlyLimit.toLocaleString()} limit
+                of {formatINR(mainBudget.monthlyLimit)} limit
               </span>
             </div>
 

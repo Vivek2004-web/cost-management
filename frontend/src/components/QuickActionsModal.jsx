@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { Play, FileText, Download, Share2, RefreshCw, Zap, Plus, CheckCircle2, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';

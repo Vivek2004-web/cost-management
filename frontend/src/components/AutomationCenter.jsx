@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { CheckSquare, Clock, ShieldAlert, Zap, Power, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 export default function AutomationCenter() {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { Network, Server, Database, HardDrive, Cpu, ShieldCheck, Activity, Info } from 'lucide-react';
 
 export default function TopologyMap() {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { Users, PieChart, TrendingUp } from 'lucide-react';
 
 export default function TeamCostCenter() {

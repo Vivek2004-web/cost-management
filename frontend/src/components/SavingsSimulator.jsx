@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import { Sliders, Sparkles, TrendingDown, DollarSign, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
 
 export default function SavingsSimulator({ monthlySpend = 3120 }) {

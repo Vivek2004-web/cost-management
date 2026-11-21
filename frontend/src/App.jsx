@@ -20,8 +20,13 @@ export default function App() {
         try { return await res.json(); } catch { return { success: false }; }
       };
 
-      // If no token exists in localStorage, auto-login so dashboard opens directly
+      // If no token exists in localStorage, check if user explicitly logged out
       if (!activeToken) {
+        if (sessionStorage.getItem('cloud_monitor_logged_out') === 'true') {
+          setLoading(false);
+          return;
+        }
+
         try {
           let res = await fetch('/api/auth/login', {
             method: 'POST',
@@ -86,11 +91,13 @@ export default function App() {
   }, [token]);
 
   const handleLoginSuccess = (userData, authToken) => {
+    sessionStorage.removeItem('cloud_monitor_logged_out');
     setUser(userData);
     setToken(authToken);
   };
 
   const handleLogout = () => {
+    sessionStorage.setItem('cloud_monitor_logged_out', 'true');
     localStorage.removeItem('cloud_monitor_token');
     setUser(null);
     setToken('');

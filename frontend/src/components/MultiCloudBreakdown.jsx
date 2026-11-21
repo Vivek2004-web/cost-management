@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatINR, toINR, USD_TO_INR } from '../utils/currency';
 import {
   Layers, Scale, Zap, TrendingUp, Sparkles, Server, Database, HardDrive,
   BarChart3, Globe, CheckCircle2, ArrowRight, DollarSign, Sliders, Shield, AlertCircle
